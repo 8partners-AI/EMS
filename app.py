@@ -23,6 +23,11 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     
+    /* Streamlit 기본 요소 숨기기 */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
     /* 메인 콘텐츠 영역 */
     .main .block-container {
         padding-top: 2rem;
@@ -65,7 +70,7 @@ st.markdown("""
         font-size: 0.75rem;
     }
     
-    /* Expander 스타일 - 드롭다운처럼 보이게 */
+    /* Expander 완전 커스터마이징 */
     .streamlit-expanderHeader {
         font-size: 0.75rem !important;
         font-weight: 600 !important;
@@ -73,10 +78,43 @@ st.markdown("""
         padding: 0.5rem 0 !important;
         margin-bottom: 0.5rem !important;
         background-color: transparent !important;
+        border: none !important;
     }
     
     .streamlit-expanderHeader:hover {
         background-color: transparent !important;
+    }
+    
+    /* Expander 아이콘 숨기기 및 커스터마이징 */
+    .streamlit-expanderHeader svg {
+        display: none !important;
+    }
+    
+    /* Material Icons 텍스트 숨기기 */
+    .streamlit-expanderHeader .material-icons,
+    .streamlit-expanderHeader [class*="material-icons"],
+    .streamlit-expanderHeader span[class*="icon"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* keyboard_arrow 같은 텍스트 숨기기 */
+    .streamlit-expanderHeader::after {
+        content: "▼";
+        float: right;
+        font-size: 0.7rem;
+        color: #666;
+        margin-left: 0.5rem;
+    }
+    
+    /* Expander 열림 상태 */
+    .streamlit-expanderHeader[aria-expanded="true"]::after {
+        content: "▼";
+    }
+    
+    /* Expander 닫힘 상태 */
+    .streamlit-expanderHeader[aria-expanded="false"]::after {
+        content: "▶";
     }
     
     .streamlit-expanderContent {
@@ -88,6 +126,7 @@ st.markdown("""
     .streamlit-expanderContent .stButton > button {
         margin-left: 0;
         padding-left: 0.75rem;
+        font-size: 0.875rem;
     }
     
     /* 메뉴 버튼 스타일 */
@@ -125,7 +164,6 @@ st.markdown("""
         background-color: rgba(0, 0, 0, 0.05) !important;
     }
     
-    
     /* 데이터프레임 스타일 */
     .dataframe {
         font-size: 0.875rem;
@@ -152,6 +190,15 @@ st.markdown("""
     /* 구분선 숨기기 */
     hr {
         display: none;
+    }
+    
+    /* 모든 불필요한 텍스트 숨기기 */
+    [class*="keyboard"],
+    [class*="arrow"],
+    [data-testid*="key"] {
+        font-size: 0 !important;
+        visibility: hidden !important;
+        display: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -220,7 +267,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test1</div>
+            <div style='margin-top: 0.25rem;'>test2</div>
         </div>
         """, unsafe_allow_html=True)
     
