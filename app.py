@@ -55,6 +55,22 @@ st.markdown("""
         text-transform: none;
     }
     
+    /* 메인 메뉴 섹션 스타일 - 더 작게 */
+    .sidebar h3:first-of-type {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Home 버튼 스타일 - 색상 없게 */
+    button[key="menu_home"] {
+        background-color: transparent !important;
+    }
+    
+    button[key="menu_home"]:hover {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+    
     /* 사이드바 제목 */
     .sidebar h1 {
         font-size: 1.5rem;
@@ -90,8 +106,7 @@ if 'selected_page' not in st.session_state:
 
 # 메인 메뉴 섹션
 st.sidebar.markdown("### 메인 메뉴")
-if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home",
-                    type="primary" if st.session_state.selected_page == "🏠 Home" else "secondary"):
+if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", type="secondary"):
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
