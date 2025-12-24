@@ -7,25 +7,69 @@ import sys
 
 # 페이지 설정
 st.set_page_config(
-    page_title="8Partners Dashboard",
+    page_title="EMS QUANT AI",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # 사이드바 네비게이션
-st.sidebar.title("📊 8Partners")
+st.sidebar.markdown("# EMS QUANT AI")
 st.sidebar.markdown("---")
 
-# 메인 메뉴
-menu = st.sidebar.selectbox(
-    "메인 메뉴",
-    ["🏠 Home", "🇰🇷 한국장", "🇺🇸 미국장", "📈 분석", "⚙️ 설정"]
-)
+# 세션 상태 초기화
+if 'selected_page' not in st.session_state:
+    st.session_state.selected_page = "🏠 Home"
+
+# 메인 메뉴 섹션
+st.sidebar.markdown("### 메인 메뉴")
+if st.sidebar.button("🏠 Home", use_container_width=True, key="home"):
+    st.session_state.selected_page = "🏠 Home"
+    st.rerun()
+
+st.sidebar.markdown("---")
+
+# 한국장 섹션
+st.sidebar.markdown("### 한국장")
+if st.sidebar.button("📄 일일 리포트", use_container_width=True, key="kr_daily"):
+    st.session_state.selected_page = "📄 일일 리포트"
+    st.rerun()
+if st.sidebar.button("💯 EMS스코어", use_container_width=True, key="kr_score"):
+    st.session_state.selected_page = "💯 EMS스코어"
+    st.rerun()
+if st.sidebar.button("📊 섹터 모니터링", use_container_width=True, key="kr_sector"):
+    st.session_state.selected_page = "📊 섹터 모니터링"
+    st.rerun()
+if st.sidebar.button("📈 섹터별 수익률", use_container_width=True, key="kr_returns"):
+    st.session_state.selected_page = "📈 섹터별 수익률"
+    st.rerun()
+if st.sidebar.button("🔍 종목 스크리닝", use_container_width=True, key="kr_screening"):
+    st.session_state.selected_page = "🔍 종목 스크리닝"
+    st.rerun()
+
+st.sidebar.markdown("---")
+
+# 미국장 섹션
+st.sidebar.markdown("### 미국장")
+if st.sidebar.button("💯 EMS스코어", use_container_width=True, key="us_score"):
+    st.session_state.selected_page = "💯 EMS스코어 (US)"
+    st.rerun()
+if st.sidebar.button("📊 섹터 모니터링", use_container_width=True, key="us_sector"):
+    st.session_state.selected_page = "📊 섹터 모니터링 (US)"
+    st.rerun()
+if st.sidebar.button("📈 섹터별 수익률", use_container_width=True, key="us_returns"):
+    st.session_state.selected_page = "📈 섹터별 수익률 (US)"
+    st.rerun()
+if st.sidebar.button("🔍 종목 스크리닝", use_container_width=True, key="us_screening"):
+    st.session_state.selected_page = "🔍 종목 스크리닝 (US)"
+    st.rerun()
+
+# 현재 선택된 페이지
+menu = st.session_state.selected_page
 
 # Home 페이지
 if menu == "🏠 Home":
-    st.title("🏠 8Partners Dashboard")
+    st.title("🏠 EMS QUANT AI")
     st.markdown("---")
     
     # 주요 지표
@@ -51,18 +95,18 @@ if menu == "🏠 Home":
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🇰🇷 한국장 분석", use_container_width=True):
-            st.session_state.menu = "🇰🇷 한국장"
+        if st.button("📄 일일 리포트", use_container_width=True):
+            st.session_state.selected_page = "📄 일일 리포트"
             st.rerun()
     
     with col2:
-        if st.button("🇺🇸 미국장 분석", use_container_width=True):
-            st.session_state.menu = "🇺🇸 미국장"
+        if st.button("📊 섹터 모니터링", use_container_width=True):
+            st.session_state.selected_page = "📊 섹터 모니터링"
             st.rerun()
     
     with col3:
-        if st.button("📈 데이터 분석", use_container_width=True):
-            st.session_state.menu = "📈 분석"
+        if st.button("🔍 종목 스크리닝", use_container_width=True):
+            st.session_state.selected_page = "🔍 종목 스크리닝"
             st.rerun()
     
     st.markdown("---")
@@ -78,196 +122,158 @@ if menu == "🏠 Home":
     
     st.dataframe(activity_data, use_container_width=True, hide_index=True)
 
-# 한국장 페이지
-elif menu == "🇰🇷 한국장":
-    st.title("🇰🇷 한국장 분석")
+# 한국장 - 일일 리포트
+elif menu == "📄 일일 리포트":
+    st.title("📄 일일 리포트")
+    st.markdown("---")
+    st.info("일일 리포트 기능 개발 중입니다.")
+    
+# 한국장 - EMS스코어
+elif menu == "💯 EMS스코어":
+    st.title("💯 EMS스코어")
+    st.markdown("---")
+    st.info("EMS스코어 기능 개발 중입니다.")
+
+# 한국장 - 섹터 모니터링
+elif menu == "📊 섹터 모니터링":
+    st.title("📊 섹터 모니터링")
     st.markdown("---")
     
-    # 서브 메뉴
-    submenu = st.tabs(["📊 종목 분석", "📈 업종별 수익률", "🔥 급등주", "📋 관심종목"])
+    sector_data = pd.DataFrame({
+        "업종": ["반도체", "2차전지", "IT서비스", "은행", "증권", "화학", "바이오", "자동차"],
+        "수익률": [5.2, 3.8, 2.1, -0.5, 1.2, 4.5, 6.2, 2.8],
+        "종목수": [45, 32, 28, 12, 15, 38, 52, 25]
+    })
     
-    with submenu[0]:  # 종목 분석
-        st.subheader("📊 종목 분석")
-        
-        # 검색 및 필터
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            search_term = st.text_input("종목명 검색", placeholder="예: 삼성전자")
-        
-        with col2:
-            market = st.selectbox("시장", ["전체", "코스피", "코스닥", "코넥스"])
-        
-        with col3:
-            sort_by = st.selectbox("정렬 기준", ["시가총액", "등락률", "거래량"])
-        
-        # 샘플 데이터
-        sample_data = pd.DataFrame({
-            "종목명": ["삼성전자", "SK하이닉스", "LG에너지솔루션", "NAVER", "카카오"],
-            "현재가": [75000, 150000, 450000, 180000, 55000],
-            "등락률": [2.5, -1.2, 3.8, 0.5, -2.1],
-            "거래량": [12500000, 3500000, 850000, 2100000, 5800000],
-            "시가총액": [4500000, 1100000, 1050000, 280000, 120000]
-        })
-        
-        st.dataframe(sample_data, use_container_width=True, hide_index=True)
-        
-        # 차트
-        if st.checkbox("차트 표시"):
-            st.line_chart(sample_data.set_index("종목명")[["현재가", "등락률"]])
+    col1, col2 = st.columns(2)
     
-    with submenu[1]:  # 업종별 수익률
-        st.subheader("📈 업종별 수익률")
-        
-        period = st.selectbox("기간", ["1일", "1주", "1개월", "3개월", "6개월", "1년"])
-        
-        sector_data = pd.DataFrame({
-            "업종": ["반도체", "2차전지", "IT서비스", "은행", "증권", "화학", "바이오", "자동차"],
-            "수익률": [5.2, 3.8, 2.1, -0.5, 1.2, 4.5, 6.2, 2.8],
-            "종목수": [45, 32, 28, 12, 15, 38, 52, 25]
-        })
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.dataframe(sector_data, use_container_width=True, hide_index=True)
-        
-        with col2:
-            st.bar_chart(sector_data.set_index("업종")["수익률"])
+    with col1:
+        st.dataframe(sector_data, use_container_width=True, hide_index=True)
     
-    with submenu[2]:  # 급등주
-        st.subheader("🔥 급등주")
-        
-        timeframe = st.selectbox("시간대", ["당일", "1주일", "1개월"])
-        
-        hot_stocks = pd.DataFrame({
-            "종목명": ["A기업", "B기업", "C기업", "D기업", "E기업"],
-            "현재가": [15000, 25000, 35000, 45000, 55000],
-            "등락률": [15.5, 12.3, 10.8, 9.2, 8.5],
-            "거래량": [5000000, 3200000, 2800000, 2100000, 1800000],
-            "시가총액": [150000, 250000, 350000, 450000, 550000]
-        })
-        
-        st.dataframe(hot_stocks, use_container_width=True, hide_index=True)
-    
-    with submenu[3]:  # 관심종목
-        st.subheader("📋 관심종목")
-        
-        watchlist = st.multiselect(
-            "관심종목 선택",
-            ["삼성전자", "SK하이닉스", "LG에너지솔루션", "NAVER", "카카오", "현대차", "기아", "POSCO홀딩스"],
-            default=["삼성전자", "SK하이닉스"]
-        )
-        
-        if watchlist:
-            watchlist_data = pd.DataFrame({
-                "종목명": watchlist,
-                "현재가": [75000, 150000, 450000, 180000, 55000, 250000, 120000, 450000],
-                "등락률": [2.5, -1.2, 3.8, 0.5, -2.1, 1.5, 2.3, 0.8],
-                "거래량": [12500000, 3500000, 850000, 2100000, 5800000, 1200000, 2100000, 850000]
-            })
-            
-            st.dataframe(watchlist_data, use_container_width=True, hide_index=True)
+    with col2:
+        st.bar_chart(sector_data.set_index("업종")["수익률"])
 
-# 미국장 페이지
-elif menu == "🇺🇸 미국장":
-    st.title("🇺🇸 미국장 분석")
+# 한국장 - 섹터별 수익률
+elif menu == "📈 섹터별 수익률":
+    st.title("📈 섹터별 수익률")
     st.markdown("---")
     
-    # 서브 메뉴
-    submenu = st.tabs(["📊 종목 분석", "📈 섹터별 수익률", "🔥 급등주", "💼 포트폴리오"])
+    period = st.selectbox("기간", ["1일", "1주", "1개월", "3개월", "6개월", "1년"])
     
-    with submenu[0]:  # 종목 분석
-        st.subheader("📊 종목 분석")
-        
-        # 검색 및 필터
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            search_term = st.text_input("종목명/Ticker 검색", placeholder="예: AAPL, Apple")
-        
-        with col2:
-            sector = st.selectbox("섹터", ["전체", "Technology", "Healthcare", "Finance", "Consumer", "Energy"])
-        
-        with col3:
-            sort_by = st.selectbox("정렬 기준", ["시가총액", "등락률", "거래량"])
-        
-        # 샘플 데이터
-        us_stocks = pd.DataFrame({
-            "Ticker": ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"],
-            "회사명": ["Apple", "Microsoft", "Google", "Amazon", "NVIDIA"],
-            "현재가": [175.50, 380.25, 142.30, 145.80, 485.20],
-            "등락률": [1.2, -0.5, 2.1, 0.8, 3.5],
-            "거래량": [45000000, 28000000, 32000000, 38000000, 52000000],
-            "시가총액": [2800000, 2800000, 1800000, 1500000, 1200000]
-        })
-        
-        st.dataframe(us_stocks, use_container_width=True, hide_index=True)
-        
-        # 차트
-        if st.checkbox("차트 표시"):
-            st.line_chart(us_stocks.set_index("Ticker")[["현재가", "등락률"]])
+    sector_data = pd.DataFrame({
+        "업종": ["반도체", "2차전지", "IT서비스", "은행", "증권", "화학", "바이오", "자동차"],
+        "수익률": [5.2, 3.8, 2.1, -0.5, 1.2, 4.5, 6.2, 2.8],
+        "종목수": [45, 32, 28, 12, 15, 38, 52, 25]
+    })
     
-    with submenu[1]:  # 섹터별 수익률
-        st.subheader("📈 섹터별 수익률")
-        
-        period = st.selectbox("기간", ["1일", "1주", "1개월", "3개월", "6개월", "1년"])
-        
-        sector_data = pd.DataFrame({
-            "섹터": ["Technology", "Healthcare", "Finance", "Consumer", "Energy", "Industrial", "Materials", "Utilities"],
-            "수익률": [3.2, 2.8, 1.5, 2.1, -0.8, 1.8, 2.5, 0.9],
-            "종목수": [125, 98, 85, 72, 45, 68, 52, 38]
-        })
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.dataframe(sector_data, use_container_width=True, hide_index=True)
-        
-        with col2:
-            st.bar_chart(sector_data.set_index("섹터")["수익률"])
+    col1, col2 = st.columns(2)
     
-    with submenu[2]:  # 급등주
-        st.subheader("🔥 급등주")
-        
-        timeframe = st.selectbox("시간대", ["당일", "1주일", "1개월"])
-        
-        hot_stocks = pd.DataFrame({
-            "Ticker": ["TSLA", "AMD", "META", "NFLX", "PYPL"],
-            "회사명": ["Tesla", "AMD", "Meta", "Netflix", "PayPal"],
-            "현재가": [245.50, 125.80, 320.25, 450.60, 65.30],
-            "등락률": [8.5, 6.2, 5.8, 4.9, 4.2],
-            "거래량": [85000000, 45000000, 38000000, 28000000, 25000000]
-        })
-        
-        st.dataframe(hot_stocks, use_container_width=True, hide_index=True)
+    with col1:
+        st.dataframe(sector_data, use_container_width=True, hide_index=True)
     
-    with submenu[3]:  # 포트폴리오
-        st.subheader("💼 포트폴리오")
-        
-        portfolio = st.multiselect(
-            "포트폴리오 종목 선택",
-            ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "NFLX"],
-            default=["AAPL", "MSFT", "GOOGL"]
-        )
-        
-        if portfolio:
-            portfolio_data = pd.DataFrame({
-                "Ticker": portfolio,
-                "회사명": ["Apple", "Microsoft", "Google", "Amazon", "NVIDIA", "Tesla", "Meta", "Netflix"],
-                "현재가": [175.50, 380.25, 142.30, 145.80, 485.20, 245.50, 320.25, 450.60],
-                "등락률": [1.2, -0.5, 2.1, 0.8, 3.5, 8.5, 5.8, 4.9],
-                "보유수량": [100, 50, 75, 60, 30, 40, 25, 20],
-                "평가금액": [17550, 19012.5, 10672.5, 8748, 14556, 9820, 8006.25, 9012]
-            })
-            
-            st.dataframe(portfolio_data, use_container_width=True, hide_index=True)
-            
-            # 총 평가금액
-            total_value = portfolio_data["평가금액"].sum()
-            st.metric("총 평가금액", f"${total_value:,.2f}")
+    with col2:
+        st.bar_chart(sector_data.set_index("업종")["수익률"])
 
-# 분석 페이지
+# 한국장 - 종목 스크리닝
+elif menu == "🔍 종목 스크리닝":
+    st.title("🔍 종목 스크리닝")
+    st.markdown("---")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        search_term = st.text_input("종목명 검색", placeholder="예: 삼성전자")
+    
+    with col2:
+        market = st.selectbox("시장", ["전체", "코스피", "코스닥", "코넥스"])
+    
+    with col3:
+        sort_by = st.selectbox("정렬 기준", ["시가총액", "등락률", "거래량"])
+    
+    sample_data = pd.DataFrame({
+        "종목명": ["삼성전자", "SK하이닉스", "LG에너지솔루션", "NAVER", "카카오"],
+        "현재가": [75000, 150000, 450000, 180000, 55000],
+        "등락률": [2.5, -1.2, 3.8, 0.5, -2.1],
+        "거래량": [12500000, 3500000, 850000, 2100000, 5800000],
+        "시가총액": [4500000, 1100000, 1050000, 280000, 120000]
+    })
+    
+    st.dataframe(sample_data, use_container_width=True, hide_index=True)
+
+# 미국장 - EMS스코어
+elif menu == "💯 EMS스코어 (US)":
+    st.title("💯 EMS스코어 (미국장)")
+    st.markdown("---")
+    st.info("미국장 EMS스코어 기능 개발 중입니다.")
+
+# 미국장 - 섹터 모니터링
+elif menu == "📊 섹터 모니터링 (US)":
+    st.title("📊 섹터 모니터링 (미국장)")
+    st.markdown("---")
+    
+    sector_data = pd.DataFrame({
+        "섹터": ["Technology", "Healthcare", "Finance", "Consumer", "Energy", "Industrial", "Materials", "Utilities"],
+        "수익률": [3.2, 2.8, 1.5, 2.1, -0.8, 1.8, 2.5, 0.9],
+        "종목수": [125, 98, 85, 72, 45, 68, 52, 38]
+    })
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.dataframe(sector_data, use_container_width=True, hide_index=True)
+    
+    with col2:
+        st.bar_chart(sector_data.set_index("섹터")["수익률"])
+
+# 미국장 - 섹터별 수익률
+elif menu == "📈 섹터별 수익률 (US)":
+    st.title("📈 섹터별 수익률 (미국장)")
+    st.markdown("---")
+    
+    period = st.selectbox("기간", ["1일", "1주", "1개월", "3개월", "6개월", "1년"])
+    
+    sector_data = pd.DataFrame({
+        "섹터": ["Technology", "Healthcare", "Finance", "Consumer", "Energy", "Industrial", "Materials", "Utilities"],
+        "수익률": [3.2, 2.8, 1.5, 2.1, -0.8, 1.8, 2.5, 0.9],
+        "종목수": [125, 98, 85, 72, 45, 68, 52, 38]
+    })
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.dataframe(sector_data, use_container_width=True, hide_index=True)
+    
+    with col2:
+        st.bar_chart(sector_data.set_index("섹터")["수익률"])
+
+# 미국장 - 종목 스크리닝
+elif menu == "🔍 종목 스크리닝 (US)":
+    st.title("🔍 종목 스크리닝 (미국장)")
+    st.markdown("---")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        search_term = st.text_input("종목명/Ticker 검색", placeholder="예: AAPL, Apple")
+    
+    with col2:
+        sector = st.selectbox("섹터", ["전체", "Technology", "Healthcare", "Finance", "Consumer", "Energy"])
+    
+    with col3:
+        sort_by = st.selectbox("정렬 기준", ["시가총액", "등락률", "거래량"])
+    
+    us_stocks = pd.DataFrame({
+        "Ticker": ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"],
+        "회사명": ["Apple", "Microsoft", "Google", "Amazon", "NVIDIA"],
+        "현재가": [175.50, 380.25, 142.30, 145.80, 485.20],
+        "등락률": [1.2, -0.5, 2.1, 0.8, 3.5],
+        "거래량": [45000000, 28000000, 32000000, 38000000, 52000000],
+        "시가총액": [2800000, 2800000, 1800000, 1500000, 1200000]
+    })
+    
+    st.dataframe(us_stocks, use_container_width=True, hide_index=True)
+
+# 기존 분석 페이지 (호환성을 위해 유지)
 elif menu == "📈 분석":
     st.title("📈 데이터 분석")
     st.markdown("---")
@@ -345,7 +351,7 @@ elif menu == "📈 분석":
     else:
         st.info("👆 위에서 데이터 파일을 업로드해주세요.")
 
-# 설정 페이지
+# 기존 설정 페이지 (호환성을 위해 유지)
 elif menu == "⚙️ 설정":
     st.title("⚙️ 설정")
     st.markdown("---")
@@ -384,7 +390,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style='text-align: center; color: gray;'>
-        <p>© 2024 8Partners. All rights reserved.</p>
+        <p>© 2024 EMS QUANT AI. All rights reserved.</p>
     </div>
     """,
     unsafe_allow_html=True
