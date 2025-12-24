@@ -5,6 +5,24 @@ from datetime import datetime
 import os
 import sys
 
+# HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
+# JavaScript를 사용하여 클라이언트 측에서 리다이렉트 수행
+st.markdown("""
+<script>
+(function() {
+    // 현재 프로토콜이 HTTP인 경우 HTTPS로 리다이렉트
+    if (window.location.protocol === 'http:') {
+        var httpsUrl = window.location.href.replace('http://', 'https://');
+        // 8partners.co.kr 도메인인 경우에만 리다이렉트
+        if (window.location.hostname === '8partners.co.kr' || 
+            window.location.hostname.includes('8partners.co.kr')) {
+            window.location.replace(httpsUrl);
+        }
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
+
 # 페이지 설정
 st.set_page_config(
     page_title="EMS QUANT AI",
@@ -267,7 +285,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test2</div>
+            <div style='margin-top: 0.25rem;'>test3</div>
         </div>
         """, unsafe_allow_html=True)
     
