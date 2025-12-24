@@ -7,7 +7,7 @@ import sys
 
 # 페이지 설정
 st.set_page_config(
-    page_title="EMS QUANT AI test1",
+    page_title="EMS QUANT AI",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -62,6 +62,32 @@ st.markdown("""
     .sidebar h3:first-of-type {
         margin-top: 0;
         margin-bottom: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Expander 스타일 - 드롭다운처럼 보이게 */
+    .streamlit-expanderHeader {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        color: #262730 !important;
+        padding: 0.5rem 0 !important;
+        margin-bottom: 0.5rem !important;
+        background-color: transparent !important;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        background-color: transparent !important;
+    }
+    
+    .streamlit-expanderContent {
+        padding: 0 !important;
+        margin-top: 0 !important;
+    }
+    
+    /* Expander 내부 버튼 스타일 */
+    .streamlit-expanderContent .stButton > button {
+        margin-left: 0;
+        padding-left: 0.75rem;
     }
     
     /* 메뉴 버튼 스타일 */
@@ -99,18 +125,6 @@ st.markdown("""
         background-color: rgba(0, 0, 0, 0.05) !important;
     }
     
-    /* Expander 제거 - 일반 메뉴처럼 보이게 */
-    .streamlit-expanderHeader {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #262730;
-        padding: 0.5rem 0;
-        margin-bottom: 0.5rem;
-    }
-    
-    .streamlit-expanderContent {
-        padding: 0;
-    }
     
     /* 데이터프레임 스타일 */
     .dataframe {
@@ -159,43 +173,56 @@ if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", typ
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
-# 한국장 섹션 (드롭다운처럼 보이지만 항상 펼쳐진 상태)
-st.sidebar.markdown("### 한국장")
-kr_menu_items = [
-    ("📄 일일 리포트", "📄 일일 리포트"),
-    ("💯 EMS스코어", "💯 EMS스코어"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
-]
+# 한국장 섹션 (드롭다운 - 항상 펼쳐진 상태)
+with st.sidebar.expander("### 한국장", expanded=True):
+    kr_menu_items = [
+        ("📄 일일 리포트", "📄 일일 리포트"),
+        ("💯 EMS스코어", "💯 EMS스코어"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
+    ]
+    
+    for label, page in kr_menu_items:
+        if st.button(label, use_container_width=True, key=f"kr_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
-for label, page in kr_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"kr_{page}",
-                type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
-
-# 미국장 섹션 (드롭다운처럼 보이지만 항상 펼쳐진 상태)
-st.sidebar.markdown("### 미국장")
-us_menu_items = [
-    ("💯 EMS스코어", "💯 EMS스코어 (US)"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
-]
-
-for label, page in us_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"us_{page}",
-                type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
+# 미국장 섹션 (드롭다운 - 항상 펼쳐진 상태)
+with st.sidebar.expander("### 미국장", expanded=True):
+    us_menu_items = [
+        ("💯 EMS스코어", "💯 EMS스코어 (US)"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
+    ]
+    
+    for label, page in us_menu_items:
+        if st.button(label, use_container_width=True, key=f"us_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
 # 현재 선택된 페이지
 menu = st.session_state.selected_page
 
 # Home 페이지
 if menu == "🏠 Home":
-    st.title("EMS OVERVIEW")
+    # 타이틀과 수정 정보를 같은 줄에 표시
+    col_title, col_info = st.columns([3, 2])
+    
+    with col_title:
+        st.title("EMS OVERVIEW")
+    
+    with col_info:
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        st.markdown(f"""
+        <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
+            <div>최종 수정시간: {current_time}</div>
+            <div style='margin-top: 0.25rem;'>test1</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     # 주요 지표
     col1, col2, col3, col4 = st.columns(4)
