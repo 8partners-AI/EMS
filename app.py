@@ -13,8 +13,71 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# CSS 스타일링
+st.markdown("""
+<style>
+    /* 사이드바 스타일 개선 */
+    [data-testid="stSidebar"] {
+        background-color: #fafafa;
+    }
+    
+    /* 메뉴 버튼 스타일 */
+    .stButton > button {
+        width: 100%;
+        border-radius: 0.25rem;
+        border: none;
+        padding: 0.5rem 1rem;
+        text-align: left;
+        font-weight: 400;
+        transition: all 0.2s ease;
+        background-color: transparent;
+        color: #262730;
+        margin-bottom: 0.25rem;
+    }
+    
+    .stButton > button:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Primary 버튼 (선택된 메뉴) */
+    .stButton > button[kind="primary"] {
+        background-color: rgba(0, 0, 0, 0.08);
+        font-weight: 500;
+    }
+    
+    /* 섹션 제목 스타일 */
+    .sidebar h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #262730;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        text-transform: none;
+    }
+    
+    /* 사이드바 제목 */
+    .sidebar h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #262730;
+        margin-bottom: 1rem;
+    }
+    
+    /* 구분선 스타일 */
+    hr {
+        margin: 1rem 0;
+        border: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # 사이드바 네비게이션
-st.sidebar.markdown("# EMS QUANT AI")
+st.sidebar.markdown("""
+<div style='font-size: 1.5rem; font-weight: 700; color: #262730; margin-bottom: 1rem;'>
+EMS QUANT AI
+</div>
+""", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
 # 세션 상태 초기화
@@ -23,53 +86,57 @@ if 'selected_page' not in st.session_state:
 
 # 메인 메뉴 섹션
 st.sidebar.markdown("### 메인 메뉴")
-if st.sidebar.button("🏠 Home", use_container_width=True, key="home"):
-    st.session_state.selected_page = "🏠 Home"
-    st.rerun()
+menu_items = [
+    ("🏠 Home", "🏠 Home")
+]
+
+for label, page in menu_items:
+    if st.sidebar.button(label, use_container_width=True, key=f"menu_{page}", 
+                        type="primary" if st.session_state.selected_page == page else "secondary"):
+        st.session_state.selected_page = page
+        st.rerun()
 
 st.sidebar.markdown("---")
 
 # 한국장 섹션
 st.sidebar.markdown("### 한국장")
-if st.sidebar.button("📄 일일 리포트", use_container_width=True, key="kr_daily"):
-    st.session_state.selected_page = "📄 일일 리포트"
-    st.rerun()
-if st.sidebar.button("💯 EMS스코어", use_container_width=True, key="kr_score"):
-    st.session_state.selected_page = "💯 EMS스코어"
-    st.rerun()
-if st.sidebar.button("📊 섹터 모니터링", use_container_width=True, key="kr_sector"):
-    st.session_state.selected_page = "📊 섹터 모니터링"
-    st.rerun()
-if st.sidebar.button("📈 섹터별 수익률", use_container_width=True, key="kr_returns"):
-    st.session_state.selected_page = "📈 섹터별 수익률"
-    st.rerun()
-if st.sidebar.button("🔍 종목 스크리닝", use_container_width=True, key="kr_screening"):
-    st.session_state.selected_page = "🔍 종목 스크리닝"
-    st.rerun()
+kr_menu_items = [
+    ("📄 일일 리포트", "📄 일일 리포트"),
+    ("💯 EMS스코어", "💯 EMS스코어"),
+    ("📊 섹터 모니터링", "📊 섹터 모니터링"),
+    ("📈 섹터별 수익률", "📈 섹터별 수익률"),
+    ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
+]
+
+for label, page in kr_menu_items:
+    if st.sidebar.button(label, use_container_width=True, key=f"kr_{page}",
+                        type="primary" if st.session_state.selected_page == page else "secondary"):
+        st.session_state.selected_page = page
+        st.rerun()
 
 st.sidebar.markdown("---")
 
 # 미국장 섹션
 st.sidebar.markdown("### 미국장")
-if st.sidebar.button("💯 EMS스코어", use_container_width=True, key="us_score"):
-    st.session_state.selected_page = "💯 EMS스코어 (US)"
-    st.rerun()
-if st.sidebar.button("📊 섹터 모니터링", use_container_width=True, key="us_sector"):
-    st.session_state.selected_page = "📊 섹터 모니터링 (US)"
-    st.rerun()
-if st.sidebar.button("📈 섹터별 수익률", use_container_width=True, key="us_returns"):
-    st.session_state.selected_page = "📈 섹터별 수익률 (US)"
-    st.rerun()
-if st.sidebar.button("🔍 종목 스크리닝", use_container_width=True, key="us_screening"):
-    st.session_state.selected_page = "🔍 종목 스크리닝 (US)"
-    st.rerun()
+us_menu_items = [
+    ("💯 EMS스코어", "💯 EMS스코어 (US)"),
+    ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
+    ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
+    ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
+]
+
+for label, page in us_menu_items:
+    if st.sidebar.button(label, use_container_width=True, key=f"us_{page}",
+                        type="primary" if st.session_state.selected_page == page else "secondary"):
+        st.session_state.selected_page = page
+        st.rerun()
 
 # 현재 선택된 페이지
 menu = st.session_state.selected_page
 
 # Home 페이지
 if menu == "🏠 Home":
-    st.title("🏠 EMS QUANT AI")
+    st.title("EMS OVERVIEW")
     st.markdown("---")
     
     # 주요 지표
