@@ -63,11 +63,16 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     
-    /* 구분선 스타일 */
+    /* 구분선 숨기기 */
     hr {
-        margin: 1rem 0;
-        border: none;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+    
+    /* Expander 스타일 */
+    .streamlit-expanderHeader {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #262730;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -78,7 +83,6 @@ st.sidebar.markdown("""
 EMS QUANT AI
 </div>
 """, unsafe_allow_html=True)
-st.sidebar.markdown("---")
 
 # 세션 상태 초기화
 if 'selected_page' not in st.session_state:
@@ -86,50 +90,41 @@ if 'selected_page' not in st.session_state:
 
 # 메인 메뉴 섹션
 st.sidebar.markdown("### 메인 메뉴")
-menu_items = [
-    ("🏠 Home", "🏠 Home")
-]
+if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home",
+                    type="primary" if st.session_state.selected_page == "🏠 Home" else "secondary"):
+    st.session_state.selected_page = "🏠 Home"
+    st.rerun()
 
-for label, page in menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"menu_{page}", 
-                        type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
+# 한국장 섹션 (드롭다운)
+with st.sidebar.expander("### 한국장", expanded=True):
+    kr_menu_items = [
+        ("📄 일일 리포트", "📄 일일 리포트"),
+        ("💯 EMS스코어", "💯 EMS스코어"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
+    ]
+    
+    for label, page in kr_menu_items:
+        if st.button(label, use_container_width=True, key=f"kr_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
-st.sidebar.markdown("---")
-
-# 한국장 섹션
-st.sidebar.markdown("### 한국장")
-kr_menu_items = [
-    ("📄 일일 리포트", "📄 일일 리포트"),
-    ("💯 EMS스코어", "💯 EMS스코어"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
-]
-
-for label, page in kr_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"kr_{page}",
-                        type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
-
-st.sidebar.markdown("---")
-
-# 미국장 섹션
-st.sidebar.markdown("### 미국장")
-us_menu_items = [
-    ("💯 EMS스코어", "💯 EMS스코어 (US)"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
-]
-
-for label, page in us_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"us_{page}",
-                        type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
+# 미국장 섹션 (드롭다운)
+with st.sidebar.expander("### 미국장", expanded=True):
+    us_menu_items = [
+        ("💯 EMS스코어", "💯 EMS스코어 (US)"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
+    ]
+    
+    for label, page in us_menu_items:
+        if st.button(label, use_container_width=True, key=f"us_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
 # 현재 선택된 페이지
 menu = st.session_state.selected_page
