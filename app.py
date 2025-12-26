@@ -3,14 +3,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.1.4
-VER = "v0.1.4"
+# [버전 관리] v0.1.5
+VER = "v0.1.5"
 
-# [사이드바 로고 이미지 설정]
-# ▼ 아래 따옴표 안에 원하는 이미지의 경로(예: "image.png")나 URL을 넣으세요. ▼
-# (지금은 테스트용 임시 이미지가 들어있습니다. 꼭 교체하세요!)
-SIDEBAR_LOGO_URL = "file:///C:/Users/WD/Desktop/logo.png"
-
+# [로고 이미지 설정]
+# 여기에 가지고 계신 이미지 파일 경로(예: "my_logo.png")를 넣으시면 됩니다.
+# 지금은 테스트를 위해 웹상의 'Python 로고'를 넣어두었습니다. (깨짐 방지 확인용)
+LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/121px-Python-logo-notext.svg.png"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -21,13 +20,12 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# [사이드바 상단 로고 이미지 배치]
-# 이 코드가 실행되면 사이드바 가장 위에 이미지가 자리잡습니다.
+# [사이드바 로고 적용] - st.logo 사용 (네비게이션 맨 위에 고정)
 # -----------------------------------------------------------------------------
-if SIDEBAR_LOGO_URL:
-    # use_container_width=True로 설정하여 사이드바 너비에 맞춥니다.
-    # 필요하다면 width 파라미터로 크기를 조절할 수 있습니다 (예: width=200).
-    st.sidebar.image(SIDEBAR_LOGO_URL, use_container_width=True)
+if LOGO_URL:
+    # st.logo는 사이드바 맨 위(메뉴 위)에 이미지를 배치하는 전용 함수입니다.
+    # icon_image는 사이드바가 접혔을 때 보일 작은 아이콘입니다.
+    st.logo(LOGO_URL, icon_image=LOGO_URL)
 
 
 # 2. CSS 스타일링
@@ -46,9 +44,10 @@ st.markdown(f"""
     
     /* ----------------------------------------------------------------------
        [1] 메인 타이틀 (EMS QUANT AI) 
+       st.logo가 위에 들어가므로, margin-top을 조절해 간격을 맞춥니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
-        # padding-top: 1rem; /* 이미지 추가로 상단 여백 줄임 */
+        padding-top: 0rem; /* 로고와의 간격 최소화 */
     }}
     
     [data-testid="stSidebarNav"]::before {{
@@ -58,16 +57,15 @@ st.markdown(f"""
         
         font-size: 1.6rem;
         font-weight: 800;
-        color: #0B1E31; /* RGB(11, 30, 49) */
+        color: #0B1E31; /* Hex #0B1E31 */
         letter-spacing: -0.5px;
         
-        margin-top: 10px; /* 로고 이미지와의 간격 */
+        margin-top: 10px; /* 로고 아래 적당한 간격 */
         margin-bottom: 5px;
     }}
 
     /* ----------------------------------------------------------------------
        [2] 버전 뱃지 ({VER}) 
-       모양 변경: 알약(12px) -> 둥근 직사각형(6px)
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
@@ -79,7 +77,7 @@ st.markdown(f"""
         color: #46B1E1;                             
         
         padding: 4px 10px;         
-        border-radius: 6px;   /* [수정] 약간 네모난(둥근 직사각형) 스타일 */
+        border-radius: 6px;   
         
         font-size: 0.8rem;
         font-weight: 700;
@@ -194,5 +192,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
-
