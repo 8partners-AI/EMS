@@ -9,7 +9,7 @@ VER = "v0.1.5"
 # [로고 이미지 설정]
 # 여기에 가지고 계신 이미지 파일 경로(예: "my_logo.png")를 넣으시면 됩니다.
 # 지금은 테스트를 위해 웹상의 'Python 로고'를 넣어두었습니다. (깨짐 방지 확인용)
-LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/121px-Python-logo-notext.svg.png"
+LOGO_URL = "file:///C:/Users/WD/Desktop/logo.png"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -192,3 +192,4 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
