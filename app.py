@@ -3,8 +3,14 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.1.2
-VER = "v0.1.2"
+# [버전 관리] v0.0.1
+VER = "v0.0.1"
+
+# [사이드바 로고 이미지 설정]
+# ▼ 아래 따옴표 안에 원하는 이미지의 경로(예: "image.png")나 URL을 넣으세요. ▼
+# (지금은 테스트용 임시 이미지가 들어있습니다. 꼭 교체하세요!)
+SIDEBAR_LOGO_URL = "https://via.placeholder.com/200x70/0B1E31/FFFFFF?text=YOUR+LOGO+HERE"
+
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -13,6 +19,16 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# -----------------------------------------------------------------------------
+# [사이드바 상단 로고 이미지 배치]
+# 이 코드가 실행되면 사이드바 가장 위에 이미지가 자리잡습니다.
+# -----------------------------------------------------------------------------
+if SIDEBAR_LOGO_URL:
+    # use_container_width=True로 설정하여 사이드바 너비에 맞춥니다.
+    # 필요하다면 width 파라미터로 크기를 조절할 수 있습니다 (예: width=200).
+    st.sidebar.image(SIDEBAR_LOGO_URL, use_container_width=True)
+
 
 # 2. CSS 스타일링
 st.markdown(f"""
@@ -30,10 +46,9 @@ st.markdown(f"""
     
     /* ----------------------------------------------------------------------
        [1] 메인 타이틀 (EMS QUANT AI) 
-       요청하신 RGB(11, 30, 49) -> Hex #0B1E31 적용
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
-        padding-top: 1rem; 
+        # padding-top: 1rem; /* 이미지 추가로 상단 여백 줄임 */
     }}
     
     [data-testid="stSidebarNav"]::before {{
@@ -46,13 +61,13 @@ st.markdown(f"""
         color: #0B1E31; /* RGB(11, 30, 49) */
         letter-spacing: -0.5px;
         
-        margin-top: 20px;
+        margin-top: 10px; /* 로고 이미지와의 간격 */
         margin-bottom: 5px;
     }}
 
     /* ----------------------------------------------------------------------
        [2] 버전 뱃지 ({VER}) 
-       배경: 하얀색에 투명도 적용 (rgba(255, 255, 255, 0.7))
+       모양 변경: 알약(12px) -> 둥근 직사각형(6px)
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
@@ -60,11 +75,11 @@ st.markdown(f"""
         margin: 0 auto;      
         
         /* 뱃지 디자인 */
-        background-color: rgba(255, 255, 255, 0.7); /* 하얀색 + 투명도 0.7 (은은하게) */
-        color: #46B1E1;                             /* 글자색: 기존 밝은 하늘색 유지 */
+        background-color: rgba(255, 255, 255, 0.7); 
+        color: #46B1E1;                             
         
         padding: 4px 10px;         
-        border-radius: 12px;       
+        border-radius: 6px;   /* [수정] 약간 네모난(둥근 직사각형) 스타일 */
         
         font-size: 0.8rem;
         font-weight: 700;
@@ -179,4 +194,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
