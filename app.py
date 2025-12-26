@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 10 (타이틀 구분선 추가 & 간격 조정)
-VER = 10
+# [버전 관리] Ver: 11 (드롭다운 화살표 수직 정렬 보정)
+VER = 11
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -29,36 +29,29 @@ st.markdown("""
     footer {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 업그레이드 (구분선 + 간격 추가)
+       [1] 타이틀 디자인 (Ver 10 유지)
        ---------------------------------------------------------------------- */
-    
-    /* 네비게이션 컨테이너 상단 여백 확보 */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
     }
     
-    /* 타이틀 및 구분선 생성 */
     [data-testid="stSidebarNav"]::before {
         content: "EMS QUANT AI";
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
+        color: #1E3A8A; 
         letter-spacing: -0.5px;
-        
-        /* 위치 조정 */
         margin-left: 20px;
-        margin-right: 20px; /* 오른쪽에도 여백을 줘서 줄 길이를 조절 */
+        margin-right: 20px; 
         margin-top: 10px;
-        
-        /* [핵심] 구분선 및 간격 디자인 */
-        padding-bottom: 20px; /* 글자와 줄 사이의 간격 */
-        border-bottom: 1px solid #e0e0e0; /* 연한 회색 구분선 */
-        margin-bottom: 25px; /* 줄과 아래 메뉴 사이의 간격 (충분히 띄움) */
+        padding-bottom: 20px; 
+        border-bottom: 1px solid #e0e0e0; 
+        margin-bottom: 25px; 
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀 (Ongkoo 스타일 유지)
+       [2] 메뉴 디자인 커스텀
        ---------------------------------------------------------------------- */
     
     /* 메뉴 항목 텍스트 스타일 */
@@ -66,10 +59,10 @@ st.markdown("""
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
-        padding-left: 5px; /* 텍스트 살짝 들여쓰기 */
+        padding-left: 5px; 
     }
     
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
+    /* 선택된 메뉴(Active) */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -80,25 +73,56 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* 마우스 올렸을 때(Hover) */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* 기본 섹션 구분선 숨김 (우리가 만든 회색 줄을 쓸 것이므로) */
     [data-testid="stSidebarNavSeparator"] {
         display: none;
     }
+
+    /* ----------------------------------------------------------------------
+       [3] 드롭다운(Expander) 화살표 정렬 수정 (여기가 Ver 11 핵심!)
+       ---------------------------------------------------------------------- */
     
-    /* 섹션 헤더 (한국장, 미국장) 스타일 미세 조정 */
-    div[data-testid="stSidebarNav"] > div > div > span {
-        font-size: 0.85rem;
+    /* 드롭다운 테두리 제거 */
+    [data-testid="stSidebar"] [data-testid="stExpander"] {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+
+    /* 헤더(제목+화살표) 컨테이너 정렬 보정 */
+    [data-testid="stSidebar"] .streamlit-expanderHeader {
+        display: flex !important;       /* Flexbox 모드 강제 */
+        align-items: center !important; /* 수직 중앙 정렬 (핵심) */
+        font-size: 0.9rem;
         font-weight: 600;
-        color: #999;
-        padding-left: 15px; /* 헤더 들여쓰기 */
-        margin-top: 15px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
+        color: #666;
+        padding-left: 0.5rem;
+        padding-top: 0.5rem !important;    /* 위아래 여백을 동일하게 */
+        padding-bottom: 0.5rem !important;
+        background-color: transparent !important;
+    }
+
+    /* 헤더 내부의 텍스트(P태그) 마진 제거 */
+    /* 텍스트가 혼자 margin을 가지고 있어서 붕 뜨는 현상 방지 */
+    [data-testid="stSidebar"] .streamlit-expanderHeader p {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        line-height: 1.0 !important; /* 줄 간격 타이트하게 */
+    }
+
+    /* 헤더 내부의 아이콘(SVG) 크기 및 위치 미세 조정 */
+    [data-testid="stSidebar"] .streamlit-expanderHeader svg {
+        margin-top: 0 !important;
+        margin-right: 0.5rem !important; /* 텍스트와의 간격 */
+    }
+
+    /* 호버 효과 */
+    [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
+        color: #000;
+        background-color: rgba(0,0,0,0.02) !important; /* 살짝 반응 */
     }
 
 </style>
