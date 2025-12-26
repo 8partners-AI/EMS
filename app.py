@@ -2,14 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import os 
 
-# [버전 관리] v0.1.9
-VER = "v0.1.9"
-
-# [로고 이미지 설정]
-# 1. logo.png 파일을 app.py와 같은 폴더에 넣으세요.
-# 2. 아래와 같이 파일 이름만 적으시면 됩니다.
-LOGO_URL = "logo.png" 
+# [버전 관리] v0.2.0
+VER = "v0.2.0"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -20,15 +16,23 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# [사이드바 로고 적용]
+# [로고 이미지 경로 설정 - 절대 경로 방식]
+# GitHub 서버든, 내 컴퓨터든 상관없이 "현재 파일 옆에 있는 logo.png"를 찾습니다.
 # -----------------------------------------------------------------------------
-if LOGO_URL:
-    try:
-        # st.logo는 이미지 경로(문자열)를 받아서 처리합니다.
-        st.logo(LOGO_URL, icon_image=LOGO_URL)
-    except:
-        # 혹시 파일이 없거나 에러가 날 경우를 대비해 예외처리 (빈 공간 방지)
-        st.sidebar.warning("로고 파일을 찾을 수 없습니다. (app.py와 같은 폴더에 logo.png가 있는지 확인하세요)")
+
+# 1. 현재 실행 중인 파일(app.py)의 위치를 찾습니다.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 2. 그 위치에 있는 "logo.png" 파일의 경로를 만듭니다.
+logo_path = os.path.join(current_dir, "logo.png")
+
+# 3. 로고 적용
+if os.path.exists(logo_path):
+    st.logo(logo_path, icon_image=logo_path)
+else:
+    # 파일이 아직 GitHub에 안 올라갔거나 이름이 다를 경우 경고
+    # (이미지를 업로드하면 이 경고는 사라지고 로고가 뜹니다)
+    st.sidebar.warning("로고 파일을 찾을 수 없습니다. GitHub에 logo.png를 업로드했는지 확인하세요.")
 
 
 # 2. CSS 스타일링
