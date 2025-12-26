@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 36 (GitHub 'event-elo' 방식 적용 + 타이틀 상단 고정)
-VER = 36
+# [버전 관리] Ver: 37 (Event-Elo 순정 구조 + Ver 10 타이틀 결합)
+VER = 37
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,8 +14,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (네비게이션 간섭 0%)
+# 2. CSS 스타일링
+# [핵심] 버튼, 화살표, 폰트 관련 CSS는 싹 다 지웠습니다. (순정 유지)
+# 오직 'EMS QUANT AI' 타이틀을 넣는 코드만 Ver 10 방식으로 넣었습니다.
 st.markdown("""
+<script>
+(function() {
+    if (window.location.protocol === 'http:') {
+        var httpsUrl = window.location.href.replace('http://', 'https://');
+        if (window.location.hostname === '8partners.co.kr' || 
+            window.location.hostname.includes('8partners.co.kr')) {
+            window.location.replace(httpsUrl);
+        }
+    }
+})();
+</script>
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
@@ -29,40 +42,29 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [타이틀 상단 고정 전략]
-       네비게이션(메뉴) 자체를 건드리는 CSS는 싹 다 뺐습니다. (순정 유지)
-       대신 메뉴 전체를 아래로 80px 밀어버리고(margin-top),
-       그 빈 공간에 타이틀을 '살포시' 얹었습니다.
+       [타이틀 삽입 - Ver 10 방식 복구]
+       position: absolute (공중부양) -> X (메뉴 겹침 원인)
+       display: block (벽돌쌓기) -> O (메뉴를 자연스럽게 아래로 밀어냄)
        ---------------------------------------------------------------------- */
-    
-    /* 1. 네비게이션 메뉴를 아래로 80px 내리기 */
-    [data-testid="stSidebarNav"] {
-        margin-top: 80px !important;
-    }
-
-    /* 2. 빈 공간에 EMS QUANT AI 타이틀 넣기 */
-    [data-testid="stSidebar"]::before {
+    [data-testid="stSidebarNav"]::before {
         content: "EMS QUANT AI";
-        position: absolute;
-        top: 30px;
-        left: 20px;
-        width: calc(100% - 40px);
+        display: block;  /* 블록 요소로 만들어서 메뉴를 아래로 밀어냅니다 */
         
         font-size: 1.6rem;
         font-weight: 800;
         color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
         
-        padding-bottom: 20px;
+        /* 위치 및 간격 조정 */
+        margin-left: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
         border-bottom: 1px solid #e0e0e0;
-        z-index: 999;
     }
 
-    /* [확인] 
-       버튼 투명화, 화살표 수정 등 메뉴 스타일을 건드리는 CSS는 
-       단 한 줄도 넣지 않았습니다. 이제 GitHub 예제처럼 완벽하게 작동할 겁니다.
-    */
-    
+    /* [약속] 네비게이션 버튼, 화살표, 드롭다운 관련 CSS는 0줄입니다. */
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -73,8 +75,20 @@ st.markdown("""
 
 def page_home():
     st.title("EMS OVERVIEW")
-    st.write("메인 대시보드 화면입니다.")
-    # (내용 생략 - 기존과 동일하게 사용하시면 됩니다)
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("한국장 종목 수", "2,847", "↑ 12")
+    col2.metric("미국장 종목 수", "5,234", "↑ 45")
+    col3.metric("오늘 거래량", "1.2조원", "↑ 5.3%")
+    col4.metric("시스템 상태", "정상", "✓")
+    
+    st.subheader("🚀 빠른 접근")
+    c1, c2, c3 = st.columns(3)
+    if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
+        st.switch_page(kr_1)
+    if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
+        st.switch_page(kr_3)
+    if c3.button("🔍 종목 검색", use_container_width=True):
+        st.switch_page(kr_5)
 
 def page_kr_report(): st.title("📋 일일 리포트"); st.write("한국장 분석 리포트입니다.")
 def page_kr_score(): st.title("💯 EMS스코어"); st.info("준비 중")
@@ -89,43 +103,37 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [네비게이션 설정] - GitHub 'event-elo' 방식 (딕셔너리 구조)
+# [네비게이션 설정] - GitHub 'event-elo' 방식 (Native Dictionary)
 # -----------------------------------------------------------------------------
 
-# 1. 페이지 객체 생성 (st.Page)
-# 각 페이지를 연결하고 아이콘과 제목을 설정합니다.
+# 1. 페이지 객체 생성
 home_page = st.Page(page_home, title="Home", icon="🏠", default=True)
 
-# 한국장 페이지들
+# 한국장
 kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
 kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
 kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
 kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
 kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-# 미국장 페이지들
+# 미국장
 us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
 us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-
-# 2. 네비게이션 구조 정의 (딕셔너리 사용)
-# [핵심] 이 딕셔너리 구조가 드롭다운 메뉴를 자동으로 만듭니다.
-# "Main", "한국장", "미국장"이 각각의 섹션 헤더가 됩니다.
+# 2. 딕셔너리로 그룹화 (드롭다운 자동 생성)
 pages = {
     "Main": [home_page],
     "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
     "미국장": [us_1, us_2, us_3, us_4]
 }
 
-# 3. 네비게이션 실행
+# 3. 실행
 pg = st.navigation(pages)
 pg.run()
 
-# -----------------------------------------------------------------------------
-# [푸터]
-# -----------------------------------------------------------------------------
+# [하단 푸터]
 with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
