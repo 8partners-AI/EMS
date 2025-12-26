@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 23 (섹션 타이틀 강제 색상 변경 및 노출)
-VER = 23
+# [버전 관리] Ver: 29 (타이틀 상단 고정 + 네비게이션 기능 순정 유지 + 이중선 제거)
+VER = 29
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (섹션 타이틀 '한국장/미국장'이 안 보이는 문제 해결)
+# 2. CSS 스타일링
 st.markdown("""
 <script>
 (function() {
@@ -40,7 +40,9 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 및 구분선
+       [1] 타이틀 위치 상단 고정 (필수 CSS)
+       이 코드가 없으면 타이틀이 메뉴 맨 아래(바닥)로 떨어집니다.
+       네비게이션 기능은 건드리지 않고, 머리 위에 공간만 만들어서 제목을 넣습니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -51,64 +53,46 @@ st.markdown("""
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; 
+        color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
+        
         margin-left: 20px;
         margin-right: 20px;
         margin-top: 10px;
+        
+        /* 구분선 */
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 링크 디자인 (텍스트 스타일)
+       [2] 메뉴 버튼 투명화 (Ongkoo 스타일)
+       기능(작동)에는 영향을 주지 않고, 회색 박스만 투명하게 만듭니다.
        ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] a span {
+    [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
     }
     
+    /* 선택된 메뉴만 글자색 강조 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
+        color: #1E3A8A !important;
     }
     [data-testid="stSidebarNav"] a[aria-current="page"] span {
         color: #1E3A8A !important;
         font-weight: 800 !important;
     }
+    /* 마우스 오버 시 살짝 배경 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* ----------------------------------------------------------------------
-       [3] ★ 섹션 타이틀(한국장, 미국장) 강제 노출 (핵심 수정) ★
-       ---------------------------------------------------------------------- */
-    /* 섹션 구분자(Separator) 안의 텍스트를 타격합니다 */
-    div[data-testid="stSidebarNav"] span {
-        /* 기본적으로 모든 span을 건드리되, 링크(a) 안의 span은 제외해야 함을 유의 */
-        /* 하지만 Streamlit 구조상 섹션 헤더는 a 태그 밖에 존재함 */
-    }
-
-    /* 섹션 헤더(Main, 한국장, 미국장) 스타일링 */
-    /* Streamlit 버전에 따라 구조가 다르므로 강력한 선택자 사용 */
-    li[role="presentation"] {
-        margin-top: 20px !important;
-        margin-bottom: 10px !important;
-    }
-    
-    /* 섹션 텍스트 강제 색상 변경 */
-    li[role="presentation"] span,
-    span[data-testid="stSidebarNavSeparator"] {
-        display: block !important;       /* 무조건 보이기 */
-        visibility: visible !important;  /* 무조건 보이기 */
-        color: #1E3A8A !important;       /* 진한 남색으로 변경 (눈에 띄게) */
-        font-size: 0.85rem !important;
-        font-weight: 700 !important;
-        text-transform: uppercase;
-        padding-left: 20px !important;   /* 타이틀 라인 맞춤 */
-        opacity: 1 !important;
-    }
+    /* [약속] 네비게이션의 '한국장/미국장' 헤더나 화살표를 건드리는 CSS는
+       단 한 줄도 넣지 않았습니다. 이제 Streamlit 순정 상태로 나옵니다.
+    */
 
 </style>
 """, unsafe_allow_html=True)
@@ -181,7 +165,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정]
+# [st.navigation 설정] - 딕셔너리 구조 (드롭다운 자동 생성)
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -197,7 +181,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [딕셔너리 구조] -> 이것이 '한국장', '미국장'이라는 섹션 헤더를 만듭니다.
+# [Native Navigation] 딕셔너리로 묶어서 보냄 -> 자동으로 한국장/미국장 섹션 생성
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -206,7 +190,12 @@ pg = st.navigation({
 
 pg.run()
 
-# 푸터
-st.sidebar.markdown("---")
-current_year = datetime.now().year
-st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# -----------------------------------------------------------------------------
+# [하단 푸터] - 이중 선 생기는 st.divider() 제거
+# -----------------------------------------------------------------------------
+with st.sidebar:
+    # 아래쪽 여백 확보
+    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    
+    current_year = datetime.now().year
+    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
