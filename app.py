@@ -23,8 +23,8 @@ st.set_page_config(
 # 1. 현재 실행 중인 파일(app.py)의 위치를 찾습니다.
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# 2. 그 위치에 있는 "logo.png" 파일의 경로를 만듭니다.
-logo_path = os.path.join(current_dir, "logo.png")
+# 2. 그 위치에 있는 "logo1.png" 파일의 경로를 만듭니다.
+logo_path = os.path.join(current_dir, "logo1.png")
 
 # 3. 로고 적용
 if os.path.exists(logo_path):
@@ -197,3 +197,4 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
