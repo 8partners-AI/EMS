@@ -6,14 +6,11 @@ import os
 import sys
 
 # HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
-# JavaScript를 사용하여 클라이언트 측에서 리다이렉트 수행
 st.markdown("""
 <script>
 (function() {
-    // 현재 프로토콜이 HTTP인 경우 HTTPS로 리다이렉트
     if (window.location.protocol === 'http:') {
         var httpsUrl = window.location.href.replace('http://', 'https://');
-        // 8partners.co.kr 도메인인 경우에만 리다이렉트
         if (window.location.hostname === '8partners.co.kr' || 
             window.location.hostname.includes('8partners.co.kr')) {
             window.location.replace(httpsUrl);
@@ -31,250 +28,56 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS 스타일링 - Pretendard/Noto Sans KR 폰트 및 전체 스타일
+# 기본 CSS 스타일링
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
-    /* 전체 폰트 설정 */
     * {
         font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
     
-    /* Streamlit 기본 요소 숨기기 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* 메인 콘텐츠 영역 */
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-        max-width: 100%;
-    }
-    
-    /* 사이드바 스타일 */
-    [data-testid="stSidebar"] {
-        background-color: #fafafa;
-        padding: 1.5rem 1rem;
-    }
-    
-    /* 사이드바 타이틀 */
-    .sidebar .sidebar-content h1 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #262730;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-    }
-    
-    /* 섹션 제목 스타일 */
-    .sidebar h3 {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #262730;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-        text-transform: none;
-        letter-spacing: 0.02em;
-    }
-    
-    /* 첫 번째 섹션 (메인 메뉴) */
-    .sidebar h3:first-of-type {
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        font-size: 0.75rem;
-    }
-    
-    /* Expander 완전 커스터마이징 */
-    .streamlit-expanderHeader {
-        font-size: 0.75rem !important;
-        font-weight: 600 !important;
-        color: #262730 !important;
-        padding: 0.5rem 0 !important;
-        margin-bottom: 0.5rem !important;
-        background-color: transparent !important;
-        border: none !important;
-    }
-    
-    .streamlit-expanderHeader:hover {
-        background-color: transparent !important;
-    }
-    
-    /* Expander 아이콘 숨기기 및 커스터마이징 */
-    .streamlit-expanderHeader svg {
-        display: none !important;
-    }
-    
-    /* Material Icons 텍스트 숨기기 */
-    .streamlit-expanderHeader .material-icons,
-    .streamlit-expanderHeader [class*="material-icons"],
-    .streamlit-expanderHeader span[class*="icon"] {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    
-    /* keyboard_arrow 같은 텍스트 숨기기 */
-    .streamlit-expanderHeader::after {
-        content: "▼";
-        float: right;
-        font-size: 0.7rem;
-        color: #666;
-        margin-left: 0.5rem;
-    }
-    
-    /* Expander 열림 상태 */
-    .streamlit-expanderHeader[aria-expanded="true"]::after {
-        content: "▼";
-    }
-    
-    /* Expander 닫힘 상태 */
-    .streamlit-expanderHeader[aria-expanded="false"]::after {
-        content: "▶";
-    }
-    
-    .streamlit-expanderContent {
-        padding: 0 !important;
-        margin-top: 0 !important;
-    }
-    
-    /* Expander 내부 버튼 스타일 */
-    .streamlit-expanderContent .stButton > button {
-        margin-left: 0;
-        padding-left: 0.75rem;
-        font-size: 0.875rem;
-    }
-    
-    /* 메뉴 버튼 스타일 */
-    .stButton > button {
-        width: 100%;
-        border-radius: 0.25rem;
-        border: none;
-        padding: 0.5rem 0.75rem;
-        text-align: left;
-        font-weight: 400;
-        font-size: 0.875rem;
-        transition: all 0.2s ease;
-        background-color: transparent;
-        color: #262730;
-        margin-bottom: 0.125rem;
-        justify-content: flex-start;
-    }
-    
-    .stButton > button:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    
-    /* 선택된 메뉴 버튼 (primary) */
-    .stButton > button[kind="primary"] {
-        background-color: rgba(0, 0, 0, 0.08);
-        font-weight: 500;
-    }
-    
-    /* Home 버튼 - 항상 색상 없음 */
-    button[key="menu_home"] {
-        background-color: transparent !important;
-    }
-    
-    button[key="menu_home"]:hover {
-        background-color: rgba(0, 0, 0, 0.05) !important;
-    }
-    
-    /* 데이터프레임 스타일 */
-    .dataframe {
-        font-size: 0.875rem;
-    }
-    
-    /* 헤더 스타일 */
-    h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #262730;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #e0e0e0;
-        padding-bottom: 0.5rem;
-    }
-    
-    h3 {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: #262730;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    /* 구분선 숨기기 */
-    hr {
-        display: none;
-    }
-    
-    /* 모든 불필요한 텍스트 숨기기 */
-    [class*="keyboard"],
-    [class*="arrow"],
-    [data-testid*="key"] {
-        font-size: 0 !important;
-        visibility: hidden !important;
-        display: none !important;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # 사이드바 네비게이션
-st.sidebar.markdown("""
-<div style='font-size: 1.5rem; font-weight: 700; color: #262730; margin-bottom: 1.5rem;'>
-EMS QUANT AI
-</div>
-""", unsafe_allow_html=True)
+st.sidebar.title("EMS QUANT AI")
 
 # 세션 상태 초기화
 if 'selected_page' not in st.session_state:
     st.session_state.selected_page = "🏠 Home"
 
-# 메인 메뉴 섹션
-st.sidebar.markdown("### 메인 메뉴")
-if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", type="secondary"):
-    st.session_state.selected_page = "🏠 Home"
+# 메뉴 선택
+menu_options = {
+    "🏠 Home": "🏠 Home",
+    "📄 일일 리포트": "📄 일일 리포트",
+    "💯 EMS스코어": "💯 EMS스코어",
+    "📊 섹터 모니터링": "📊 섹터 모니터링",
+    "📈 섹터별 수익률": "📈 섹터별 수익률",
+    "🔍 종목 스크리닝": "🔍 종목 스크리닝",
+    "💯 EMS스코어 (US)": "💯 EMS스코어 (US)",
+    "📊 섹터 모니터링 (US)": "📊 섹터 모니터링 (US)",
+    "📈 섹터별 수익률 (US)": "📈 섹터별 수익률 (US)",
+    "🔍 종목 스크리닝 (US)": "🔍 종목 스크리닝 (US)"
+}
+
+selected = st.sidebar.selectbox(
+    "메뉴 선택",
+    list(menu_options.keys()),
+    index=list(menu_options.keys()).index(st.session_state.selected_page) if st.session_state.selected_page in menu_options else 0
+)
+
+if selected != st.session_state.selected_page:
+    st.session_state.selected_page = selected
     st.rerun()
 
-# 한국장 섹션 (드롭다운 - 항상 펼쳐진 상태)
-with st.sidebar.expander("### 한국장", expanded=True):
-    kr_menu_items = [
-        ("📄 일일 리포트", "📄 일일 리포트"),
-        ("💯 EMS스코어", "💯 EMS스코어"),
-        ("📊 섹터 모니터링", "📊 섹터 모니터링"),
-        ("📈 섹터별 수익률", "📈 섹터별 수익률"),
-        ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
-    ]
-    
-    for label, page in kr_menu_items:
-        if st.button(label, use_container_width=True, key=f"kr_{page}",
-                    type="primary" if st.session_state.selected_page == page else "secondary"):
-            st.session_state.selected_page = page
-            st.rerun()
-
-# 미국장 섹션 (드롭다운 - 항상 펼쳐진 상태)
-with st.sidebar.expander("### 미국장", expanded=True):
-    us_menu_items = [
-        ("💯 EMS스코어", "💯 EMS스코어 (US)"),
-        ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
-        ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
-        ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
-    ]
-    
-    for label, page in us_menu_items:
-        if st.button(label, use_container_width=True, key=f"us_{page}",
-                    type="primary" if st.session_state.selected_page == page else "secondary"):
-            st.session_state.selected_page = page
-            st.rerun()
-
-# 현재 선택된 페이지
 menu = st.session_state.selected_page
 
 # Home 페이지
 if menu == "🏠 Home":
-    # 타이틀과 수정 정보를 같은 줄에 표시
     col_title, col_info = st.columns([3, 2])
     
     with col_title:
@@ -304,7 +107,6 @@ if menu == "🏠 Home":
     with col4:
         st.metric("시스템 상태", "정상", "✓")
     
-    # 빠른 접근
     st.subheader("🚀 빠른 접근")
     
     col1, col2, col3 = st.columns(3)
@@ -324,7 +126,6 @@ if menu == "🏠 Home":
             st.session_state.selected_page = "🔍 종목 스크리닝"
             st.rerun()
     
-    # 최근 활동
     st.subheader("📊 최근 활동")
     
     activity_data = pd.DataFrame({
@@ -337,17 +138,14 @@ if menu == "🏠 Home":
 
 # 한국장 - 일일 리포트
 elif menu == "📄 일일 리포트":
-    # 메인 헤더 (밑줄 포함)
     st.markdown("""
     <h1 style='font-size: 1.75rem; font-weight: 700; color: #262730; margin-bottom: 1rem; border-bottom: 2px solid #e0e0e0; padding-bottom: 0.5rem;'>
     📋 일일 섹터 및 종목 분석 리포트
     </h1>
     """, unsafe_allow_html=True)
     
-    # 소제목
     st.markdown("### 🎯 오늘의 스크리닝 요약")
     
-    # 샘플 데이터 생성 (실제 데이터로 교체 필요)
     sample_data = pd.DataFrame({
         "종목명": ["삼성전자", "SK하이닉스", "LG에너지솔루션", "NAVER", "카카오", "현대차", "포스코", "셀트리온"],
         "현재가": [75000, 150000, 450000, 180000, 55000, 220000, 380000, 180000],
@@ -357,14 +155,12 @@ elif menu == "📄 일일 리포트":
                 "저점 이후 반등", "저점 매수 영역", "저점 이후 반등", "저점 매수 영역"]
     })
     
-    # 데이터프레임 스타일링 함수
     def style_dataframe(df):
-        """국면 열에 따라 배경색 적용"""
         def highlight_phase(val):
             if val == "저점 이후 반등":
-                return 'background-color: #ffebee'  # 연한 빨간색
+                return 'background-color: #ffebee'
             elif val == "저점 매수 영역":
-                return 'background-color: #fff3e0'  # 연한 주황색
+                return 'background-color: #fff3e0'
             return ''
         
         styled = df.style.applymap(highlight_phase, subset=['국면'])
@@ -376,12 +172,9 @@ elif menu == "📄 일일 리포트":
         ])
         return styled
     
-    # 스타일링된 데이터프레임 표시
     styled_df = style_dataframe(sample_data)
     st.markdown(styled_df.to_html(escape=False, index=False), unsafe_allow_html=True)
     
-    # 추가 정보
-    st.markdown("<br>", unsafe_allow_html=True)
     st.info("💡 위 데이터는 샘플 데이터입니다. 실제 데이터 연동 후 업데이트됩니다.")
 
 # 한국장 - EMS스코어
