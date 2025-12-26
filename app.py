@@ -8,8 +8,8 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.2 (스크린샷 참조하여 업데이트)
-VER = "v0.2.2"
+# [버전 관리] v0.2.3
+VER = "v0.2.3"
 
 # [로고 크기 조절]
 LOGO_WIDTH = 150
@@ -217,3 +217,4 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
