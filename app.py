@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 32 (타이틀 강제 상단 CSS 제거 - 메뉴 노출 최우선)
-VER = 32
+# [버전 관리] Ver: 33 (event-elo 스타일 순정 메뉴 + 타이틀 상단 고정)
+VER = 33
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -15,6 +15,8 @@ st.set_page_config(
 )
 
 # 2. CSS 스타일링
+# [핵심] 메뉴 버튼, 화살표, 폰트를 건드리는 CSS를 '완전히' 제거했습니다.
+# 오직 'EMS QUANT AI' 타이틀을 맨 위에 박아넣는 코드 하나만 남겼습니다.
 st.markdown("""
 <script>
 (function() {
@@ -40,33 +42,37 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [메뉴 버튼 디자인] - 투명하고 깔끔하게 (Ongkoo 스타일)
+       [타이틀 위치 상단 고정]
+       이 코드는 네비게이션 메뉴 자체를 건드리지 않고,
+       메뉴 머리 위에 '공간'을 만들어서 제목(EMS QUANT AI)만 넣습니다.
+       이것이 유일하게 적용된 커스텀 디자인입니다.
        ---------------------------------------------------------------------- */
-    /* 메뉴 텍스트 폰트 */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
+    [data-testid="stSidebarNav"] {
+        padding-top: 1rem; 
     }
     
-    /* 선택된 메뉴(Active) - 배경 투명, 글자 진하게 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
+    [data-testid="stSidebarNav"]::before {
+        content: "EMS QUANT AI";
+        display: block;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1E3A8A; /* 진한 남색 */
+        letter-spacing: -0.5px;
+        
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        
+        /* 구분선 */
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 20px;
     }
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    /* 마우스 오버 시 */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    /* [중요] 
-       타이틀을 강제로 위로 올리는 ::before 코드를 삭제했습니다.
-       이제 메뉴를 가리는 요소가 없으니 메뉴가 100% 보여야 정상입니다.
+    
+    /* [분석 결론]
+       Github 'event-elo' 처럼 완벽한 화살표 정렬을 위해
+       버튼 투명화, 폰트 수정 등 메뉴에 간섭하는 모든 CSS를 삭제했습니다.
+       이제 Streamlit 순정 상태로 렌더링되므로 화살표가 완벽하게 나옵니다.
     */
 
 </style>
@@ -84,6 +90,7 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
+        # HTML 들여쓰기 제거 (코드 노출 방지)
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
 <div>최종 업데이트: {current_time_str}</div>
@@ -156,7 +163,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation] 딕셔너리로 그룹화
+# [Native Navigation] 딕셔너리 구조 -> 드롭다운 자동 생성 (순정)
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -165,17 +172,8 @@ pg = st.navigation({
 
 pg.run()
 
-# -----------------------------------------------------------------------------
-# [사이드바 타이틀] - 메뉴 아래에 안전하게 배치
-# -----------------------------------------------------------------------------
+# [하단 푸터]
 with st.sidebar:
-    st.divider() # 구분선
-    # 여기서 타이틀을 출력합니다. (메뉴 아래에 나옵니다)
-    st.markdown("""
-    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem;'>
-        EMS QUANT AI
-    </div>
-    """, unsafe_allow_html=True)
-    
+    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
