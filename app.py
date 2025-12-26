@@ -2,10 +2,19 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import os 
+import os
+from PIL import Image
 
-# [버전 관리] v0.2.1
-VER = "v0.2.1"
+# =============================================================================
+# [설정 영역]
+# =============================================================================
+# [버전 관리] v0.2.2
+VER = "v0.2.2"
+
+# [로고 크기 조절]
+LOGO_WIDTH = 150
+# =============================================================================
+
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -16,23 +25,22 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# [로고 이미지 경로 설정 - 절대 경로 방식]
-# GitHub 서버든, 내 컴퓨터든 상관없이 "현재 파일 옆에 있는 logo1.png"를 찾습니다.
+# [로고 이미지 경로 찾기 및 크기 조절]
 # -----------------------------------------------------------------------------
-
-# 1. 현재 실행 중인 파일(app.py)의 위치를 찾습니다.
 current_dir = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(current_dir, "logo.png")
 
-# 2. 그 위치에 있는 "logo1.png" 파일의 경로를 만듭니다.
-logo_path = os.path.join(current_dir, "logo1.png")
-
-# 3. 로고 적용
 if os.path.exists(logo_path):
-    st.logo(logo_path, icon_image=logo_path)
+    try:
+        image = Image.open(logo_path)
+        aspect_ratio = image.height / image.width
+        new_height = int(LOGO_WIDTH * aspect_ratio)
+        resized_image = image.resize((LOGO_WIDTH, new_height), Image.Resampling.LANCZOS)
+        st.logo(resized_image, icon_image=resized_image)
+    except Exception as e:
+        st.sidebar.error(f"로고 처리 중 오류 발생: {e}")
 else:
-    # 파일이 아직 GitHub에 안 올라갔거나 이름이 다를 경우 경고
-    # (이미지를 업로드하면 이 경고는 사라지고 로고가 뜹니다)
-    st.sidebar.warning("로고 파일을 찾을 수 없습니다. GitHub에 logo1.png를 업로드했는지 확인하세요.")
+    pass 
 
 
 # 2. CSS 스타일링
@@ -50,7 +58,8 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     
     /* ----------------------------------------------------------------------
-       [1] 메인 타이틀 (EMS QUANT AI) 
+       [1] 메인 타이틀 (EMS QUANT AI)
+       * 줄(Border)을 여기서 뺐습니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 0rem; 
@@ -67,16 +76,29 @@ st.markdown(f"""
         letter-spacing: -0.5px;
         
         margin-top: 10px; 
-        margin-bottom: 5px;
+        margin-bottom: 50px; /* 버전을 넣을 공간을 충분히 확보 */
     }}
 
     /* ----------------------------------------------------------------------
-       [2] 버전 뱃지 ({VER}) 
+       [2] 메뉴 컨테이너 (ul) + [회색 구분선]
+       * 메뉴통(ul)의 머리 위에 줄을 긋고, 그 위에 버전을 얹습니다.
+       ---------------------------------------------------------------------- */
+    div[data-testid="stSidebarNav"] > ul {{
+        border-top: 1px solid #e0e0e0; /* 여기가 그 '회색 줄' 입니다! */
+        padding-top: 20px;             /* 줄과 메뉴 사이 간격 */
+        position: relative;            /* 버전 뱃지의 기준점 */
+    }}
+
+    /* ----------------------------------------------------------------------
+       [3] 버전 뱃지 ({VER}) 
+       * 줄 바로 위에 떠있도록 위치(absolute)를 잡습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
-        display: table;      
-        margin: 0 auto;      
+        position: absolute;  /* 자유로운 위치 선정 */
+        top: -32px;          /* 줄(border-top)보다 32px 위로 올림 */
+        left: 50%;           /* 정중앙 */
+        transform: translateX(-50%); /* 정확한 가운데 정렬 */
         
         background-color: rgba(255, 255, 255, 0.7); 
         color: #46B1E1;                             
@@ -87,8 +109,6 @@ st.markdown(f"""
         font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 0.5px;
-        
-        margin-bottom: 25px;       
     }}
 
 </style>
@@ -197,6 +217,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
-
-
