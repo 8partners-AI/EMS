@@ -8,11 +8,11 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.3.0 (시스템 상태 Metric 제거 -> 커스텀 HTML 적용)
-VER = "v0.3.0"
+# [버전 관리] v0.3.1 
+VER = "v0.3.1"
 
 # [로고 크기 조절]
-LOGO_WIDTH = 150
+LOGO_WIDTH = 200
 # =============================================================================
 
 
@@ -139,19 +139,7 @@ def page_home():
     col1.metric("국내 증시 종목 수", "2,847", "12") 
     col2.metric("미국 증시 종목 수", "5,234", "45")
     col3.metric("오늘 거래량", "1.2조원", "5.3%")
-    
-    # [수정 완료] 4번 컬럼: Metric 대신 HTML로 직접 그리기
-    # 옆에 있는 Metric들과 디자인(폰트 크기, 색상, 위치)을 99% 일치시켰습니다.
-    with col4:
-        st.markdown("""
-            <div style="padding-top: 0px;">
-                <div style="font-size: 14px; color: #6e7781; margin-bottom: 4px;">시스템 상태</div>
-                <div style="font-size: 32px; font-weight: 600; color: #31333F; line-height: 1.2;">
-                    정상 <span style="color: #2E7D32; font-size: 0.8em; vertical-align: middle;">✓</span>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-    
+        
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
@@ -239,3 +227,4 @@ with st.sidebar:
     
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
