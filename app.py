@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 10 (Ver 10 베이스 + 우측 상단 HTML 노출 수정)
 VER = 1112312312
 
 # 1. 페이지 설정
@@ -120,7 +119,7 @@ def page_home():
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
     <div>최종 업데이트: {current_time_str}</div>
-    <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+    <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>verㅇㅇㅇㅇㅇ: {VER}</div>
 </div>
 """, unsafe_allow_html=True)
     
@@ -201,6 +200,7 @@ pg.run()
 st.sidebar.markdown("---")
 current_year = datetime.now().year
 st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
 
 
