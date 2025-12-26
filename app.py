@@ -132,8 +132,7 @@ if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", typ
     st.rerun()
 
 # 한국장 섹션 (드롭다운 - 접기/펼치기 가능)
-st.sidebar.markdown("### 한국장")
-with st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded):
+with st.sidebar.expander("### 한국장", expanded=True):
     kr_menu_items = [
         ("📄 일일 리포트", "📄 일일 리포트"),
         ("💯 EMS스코어", "💯 EMS스코어"),
@@ -149,8 +148,7 @@ with st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded):
             st.rerun()
 
 # 미국장 섹션 (드롭다운 - 접기/펼치기 가능)
-st.sidebar.markdown("### 미국장")
-with st.sidebar.expander("미국장", expanded=st.session_state.us_expanded):
+with st.sidebar.expander("### 미국장", expanded=True):
     us_menu_items = [
         ("💯 EMS스코어", "💯 EMS스코어 (US)"),
         ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
@@ -178,7 +176,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test!!!</div>
+            <div style='margin-top: 0.25rem;'>test1000</div>
         </div>
         """, unsafe_allow_html=True)
     
