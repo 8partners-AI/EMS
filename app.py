@@ -8,7 +8,7 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.3
+# [버전 관리] v0.2.3 (스크린샷 참조하여 업데이트)
 VER = "v0.2.3"
 
 # [로고 크기 조절]
@@ -37,10 +37,8 @@ if os.path.exists(logo_path):
         new_height = int(LOGO_WIDTH * aspect_ratio)
         resized_image = image.resize((LOGO_WIDTH, new_height), Image.Resampling.LANCZOS)
         st.logo(resized_image, icon_image=resized_image)
-    except Exception as e:
-        st.sidebar.error(f"로고 처리 중 오류 발생: {e}")
-else:
-    pass 
+    except:
+        pass
 
 
 # 2. CSS 스타일링
@@ -59,7 +57,7 @@ st.markdown(f"""
     
     /* ----------------------------------------------------------------------
        [1] 메인 타이틀 (EMS QUANT AI)
-       * 타이틀과 버전 사이의 간격을 좁히기 위해 마진을 조절했습니다.
+       * 마진을 대폭 줄여서 버전 뱃지를 위로 끌어올릴 공간을 만듭니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 0rem; 
@@ -76,34 +74,34 @@ st.markdown(f"""
         letter-spacing: -0.5px;
         
         margin-top: 10px; 
-        margin-bottom: 60px; /* [핵심] 버전과 구분선이 들어갈 공간 확보 */
+        margin-bottom: 25px; /* [수정] 60px -> 25px (확 줄임) */
     }}
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 컨테이너 (ul) + [회색 구분선]
-       * 메뉴통(ul)의 머리 위에 '진하고 두꺼운' 회색 줄을 긋습니다.
+       [2] 메뉴 컨테이너 (ul) + [상단 회색 구분선]
+       * 아래쪽 푸터 선과 색상 코드(#e0e0e0)와 두께(1px)를 완벽히 맞췄습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul {{
-        border-top: 2px solid #d0d0d0; /* [요청] 조금 더 굵고 진한 회색 */
-        padding-top: 20px;             /* 줄과 메뉴 사이 간격 */
+        border-top: 1px solid #e0e0e0; /* [중요] 아래쪽 선과 동일한 스펙 */
+        padding-top: 20px;             
         position: relative;            
     }}
 
     /* ----------------------------------------------------------------------
        [3] 버전 뱃지 ({VER}) 
-       * 타이틀 바로 밑, 회색 줄보다는 위에 위치하도록 좌표를 잡았습니다.
+       * 타이틀 바로 밑에 찰싹 붙도록 위치를 조정했습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
         position: absolute;  
-        top: -45px;          /* [수정] 줄보다 45px 위 (타이틀과 가까워짐) */
+        top: -38px;          /* 줄 바로 위, 타이틀 바로 아래 */
         left: 50%;           
         transform: translateX(-50%); 
         
         background-color: rgba(255, 255, 255, 0.7); 
         color: #46B1E1;                             
         
-        padding: 4px 10px;         
+        padding: 2px 8px;    /* 패딩을 살짝 줄여서 더 날렵하게 */     
         border-radius: 6px;   
         
         font-size: 0.8rem;
@@ -212,9 +210,19 @@ pages = {
 pg = st.navigation(pages)
 pg.run()
 
-# [하단 푸터]
+# -----------------------------------------------------------------------------
+# [하단 푸터 - 회색 선 통일]
+# 기존의 st.markdown("---") 대신, 상단 선과 똑같은 CSS를 가진 HTML Div를 사용합니다.
+# 이렇게 해야 위아래 선이 쌍둥이처럼 똑같아집니다.
+# -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style="
+            margin-top: 3rem; 
+            padding-bottom: 1rem;
+            border-top: 1px solid #e0e0e0; /* 상단 선과 100% 동일한 코드 */
+        "></div>
+    """, unsafe_allow_html=True)
+    
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
