@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 21 (섹션 헤더 '한국장/미국장' 강제 노출 복구)
-VER = 21
+# [버전 관리] Ver: 22 (CSS 과잉 수정 제거 -> 순정 기능 100% 복구)
+VER = 22
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링
+# 2. CSS 스타일링 (문제를 일으키는 코드는 싹 다 지웠습니다)
 st.markdown("""
 <script>
 (function() {
@@ -40,7 +40,7 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 및 구분선
+       [1] 타이틀 및 구분선 (이건 꼭 필요하므로 유지)
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -51,26 +51,29 @@ st.markdown("""
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; 
+        color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
+        
         margin-left: 20px;
         margin-right: 20px;
         margin-top: 10px;
+        
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
         margin-bottom: 25px;
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 텍스트 및 기본 디자인
+       [2] 메뉴 텍스트 깔끔하게 (박스 제거)
        ---------------------------------------------------------------------- */
+    /* 메뉴 항목 폰트 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
-        padding-left: 5px;
     }
     
+    /* 선택된 메뉴(Active) 배경 투명화 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -81,58 +84,14 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
+    /* 마우스 오버 시 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* ----------------------------------------------------------------------
-       [3] ★ 섹션 헤더(한국장, 미국장) 강제 노출 및 화살표 디자인 ★
-       여기가 핵심입니다. details > summary를 확실하게 꾸밉니다.
-       ---------------------------------------------------------------------- */
-       
-    /* 1. 그룹 헤더 컨테이너 */
-    [data-testid="stSidebarNav"] details {
-        margin-bottom: 10px !important; /* 섹션 간 간격 */
-    }
-
-    /* 2. 요약(헤더) 부분 디자인 */
-    [data-testid="stSidebarNav"] details > summary {
-        display: flex !important;
-        align-items: center !important;
-        padding-left: 10px !important;  
-        padding-top: 5px !important;
-        padding-bottom: 5px !important;
-        cursor: pointer;
-        list-style: none !important; /* 기본 삼각형 제거 */
-    }
-
-    /* 3. 화살표 아이콘(SVG) - Ver 20의 성공 코드 */
-    [data-testid="stSidebarNav"] details > summary svg {
-        transform: scale(1.2) translateY(1px) !important;
-        margin-right: 0.5rem !important;
-        color: #555 !important; /* 색상 진하게 */
-        stroke-width: 2px !important;
-        vertical-align: middle !important;
-        display: inline-block !important; /* 숨김 방지 */
-        visibility: visible !important;   /* 숨김 방지 */
-    }
-
-    /* 4. [핵심 수정] 텍스트(한국장, 미국장) - 숨김 방지 및 스타일링 */
-    [data-testid="stSidebarNav"] details > summary span {
-        font-size: 0.85rem !important;
-        font-weight: 700 !important; /* 굵게 */
-        color: #444 !important;      /* 진한 회색 */
-        text-transform: uppercase !important;
-        display: inline-block !important; /* 숨김 방지 */
-        visibility: visible !important;   /* 숨김 방지 */
-        opacity: 1 !important;            /* 투명도 제거 */
-    }
-
-    /* 5. 구분선(Separator) 숨김 처리 */
-    /* 혹시 이것 때문에 텍스트가 같이 사라졌을 수 있으니, 선택자를 아주 구체적으로 잡습니다 */
-    div[data-testid="stSidebarNavSeparator"] {
-        display: none !important;
-    }
+    /* [중요] 드롭다운/헤더 관련 CSS 전부 삭제함 */
+    /* Streamlit이 기본적으로 제공하는 스타일을 그대로 씁니다. */
+    /* 이제 한국장, 미국장 글씨와 화살표가 순정 상태로 돌아와서 무조건 보일 것입니다. */
 
 </style>
 """, unsafe_allow_html=True)
@@ -205,7 +164,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정]
+# [st.navigation 설정] - 순정
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
