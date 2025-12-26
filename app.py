@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.1.1
-VER = "v0.1.1"
+# [버전 관리] v0.0.1
+VER = "v0.0.1"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -29,7 +29,8 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     
     /* ----------------------------------------------------------------------
-       [1] 메인 타이틀 (EMS QUANT AI) - 요청하신 RGB(21, 96, 130) 적용
+       [1] 메인 타이틀 (EMS QUANT AI) 
+       요청하신 RGB(11, 30, 49) -> Hex #0B1E31 적용
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 1rem; 
@@ -42,7 +43,7 @@ st.markdown(f"""
         
         font-size: 1.6rem;
         font-weight: 800;
-        color: #156082; /* RGB(21, 96, 130) -> Hex #156082 */
+        color: #0B1E31; /* RGB(11, 30, 49) */
         letter-spacing: -0.5px;
         
         margin-top: 20px;
@@ -50,7 +51,8 @@ st.markdown(f"""
     }}
 
     /* ----------------------------------------------------------------------
-       [2] 버전 뱃지 ({VER}) - 요청하신 RGB(70, 177, 225) 적용
+       [2] 버전 뱃지 ({VER}) 
+       배경: 하얀색에 투명도 적용 (rgba(255, 255, 255, 0.7))
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
@@ -58,8 +60,8 @@ st.markdown(f"""
         margin: 0 auto;      
         
         /* 뱃지 디자인 */
-        background-color: #F0F2F6; /* 배경은 연한 회색 유지 */
-        color: #46B1E1;            /* 글자색: RGB(70, 177, 225) -> Hex #46B1E1 */
+        background-color: rgba(255, 255, 255, 0.7); /* 하얀색 + 투명도 0.7 (은은하게) */
+        color: #46B1E1;                             /* 글자색: 기존 밝은 하늘색 유지 */
         
         padding: 4px 10px;         
         border-radius: 12px;       
@@ -82,7 +84,6 @@ st.markdown(f"""
 def page_home():
     col_title, col_info = st.columns([3, 2])
     with col_title:
-        # [수정 완료] EMS OVERVIEW -> OVERVIEW
         st.title("OVERVIEW")
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
