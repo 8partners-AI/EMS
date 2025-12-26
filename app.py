@@ -3,10 +3,18 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 10 (오른쪽 상단 HTML 노출 수정판)
-VER = 10
+# [버전 관리] Ver: 31 (메뉴 실종 해결 + 순정 네비게이션 + 타이틀 절대좌표 고정)
+VER = 31
 
-# HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
+# 1. 페이지 설정
+st.set_page_config(
+    page_title="EMS QUANT AI",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# 2. CSS 스타일링
 st.markdown("""
 <script>
 (function() {
@@ -19,18 +27,6 @@ st.markdown("""
     }
 })();
 </script>
-""", unsafe_allow_html=True)
-
-# 1. 페이지 설정
-st.set_page_config(
-    page_title="EMS QUANT AI",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# 2. CSS 스타일링 (질문자님이 주신 Ver 10 코드 100% 동일 유지 + 드롭다운 화살표 개선)
-st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
@@ -38,120 +34,45 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더 숨김 (햄버거 메뉴는 유지) */
-    header {visibility: visible !important; background: transparent !important;}
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 업그레이드 (구분선 + 간격 추가)
+       [타이틀 절대 위치 고정]
+       이전 버전에서 메뉴가 사라진 이유는 타이틀이 메뉴 공간을 침범했기 때문입니다.
+       이번에는 position: absolute를 사용하여 메뉴와 별개 층(Layer)에 그립니다.
        ---------------------------------------------------------------------- */
     
-    /* 네비게이션 컨테이너 상단 여백 확보 */
+    /* 1. 네비게이션 컨테이너에 공간 확보 */
     [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
+        padding-top: 4.5rem !important; /* 타이틀 들어갈 공간만큼 메뉴를 아래로 밉니다 */
+        position: relative; /* 기준점 설정 */
     }
     
-    /* 타이틀 및 구분선 생성 */
+    /* 2. 타이틀 강제 삽입 (공중 부양) */
     [data-testid="stSidebarNav"]::before {
         content: "EMS QUANT AI";
+        position: absolute; /* 절대 위치 고정 */
+        top: 20px;
+        left: 20px;
+        width: calc(100% - 40px); /* 너비 최적화 */
+        
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
+        color: #1E3A8A; 
         letter-spacing: -0.5px;
         
-        /* 위치 조정 */
-        margin-left: 20px;
-        margin-right: 20px; /* 오른쪽에도 여백을 줘서 줄 길이를 조절 */
-        margin-top: 10px;
-        
-        /* [핵심] 구분선 및 간격 디자인 */
-        padding-bottom: 20px; /* 글자와 줄 사이의 간격 */
-        border-bottom: 1px solid #e0e0e0; /* 연한 회색 구분선 */
-        margin-bottom: 25px; /* 줄과 아래 메뉴 사이의 간격 (충분히 띄움) */
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
     }
 
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀 (Ongkoo 스타일 유지)
-       ---------------------------------------------------------------------- */
-    
-    /* 메뉴 항목 텍스트 스타일 */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-        padding-left: 5px; /* 텍스트 살짝 들여쓰기 */
-    }
-    
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    /* 마우스 올렸을 때(Hover) */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    /* 기본 섹션 구분선 숨김 (우리가 만든 회색 줄을 쓸 것이므로) */
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-    
-    /* 섹션 헤더 (한국장, 미국장) 스타일 미세 조정 */
-    div[data-testid="stSidebarNav"] > div > div > span {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #999;
-        padding-left: 15px; /* 헤더 들여쓰기 */
-        margin-top: 15px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
-
-    /* ----------------------------------------------------------------------
-       [3] 드롭다운 화살표 크기 및 스타일 개선
-       ---------------------------------------------------------------------- */
-    
-    /* Expander 화살표 아이콘 크기 키우기 */
-    [data-testid="stSidebarNav"] button[aria-expanded] svg,
-    [data-testid="stSidebarNav"] button svg,
-    [data-testid="stSidebarNav"] [class*="expander"] svg {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 20px !important;
-        min-height: 20px !important;
-    }
-    
-    /* 드롭다운 버튼 스타일 개선 */
-    [data-testid="stSidebarNav"] button {
-        padding: 8px 12px !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-    }
-    
-    /* 드롭다운 버튼 호버 효과 */
-    [data-testid="stSidebarNav"] button:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-    
-    /* 화살표 아이콘 색상 조정 */
-    [data-testid="stSidebarNav"] button svg {
-        color: #666 !important;
-        fill: #666 !important;
-    }
-    
-    [data-testid="stSidebarNav"] button:hover svg {
-        color: #1E3A8A !important;
-        fill: #1E3A8A !important;
-    }
+    /* [약속 이행] 
+       네비게이션 버튼, 화살표, 텍스트, 드롭다운을 건드리는 CSS는 
+       단 하나도 없습니다. 100% 순정 상태입니다.
+    */
 
 </style>
 """, unsafe_allow_html=True)
@@ -168,13 +89,11 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # [수정된 부분] HTML 코드를 왼쪽으로 바짝 당겨서 들여쓰기를 없앴습니다.
-        # 이렇게 해야 코드가 아닌 HTML로 인식되어 렌더링됩니다.
+        # [HTML 들여쓰기 제거] 오른쪽 상단 HTML 코드 노출 방지
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-    <div>최종 업데이트: {current_time_str}</div>
-    <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+<div>최종 업데이트: {current_time_str}</div>
+<div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
 </div>
 """, unsafe_allow_html=True)
     
@@ -187,11 +106,11 @@ def page_home():
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
-        st.switch_page("pages/kr_report.py")
+        st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
-        st.switch_page("pages/kr_sector.py")
+        st.switch_page(pg_kr_3)
     if c3.button("🔍 종목 검색", use_container_width=True):
-        st.switch_page("pages/kr_screening.py")
+        st.switch_page(pg_kr_5)
         
     st.subheader("📊 최근 활동")
     activity_data = pd.DataFrame({
@@ -215,37 +134,15 @@ def page_kr_report():
     })
     st.dataframe(sample_data, use_container_width=True, hide_index=True)
 
-def page_kr_score(): 
-    st.title("💯 EMS스코어")
-    st.info("기능 개발 중입니다.")
+def page_kr_score(): st.title("💯 EMS스코어"); st.info("기능 개발 중입니다.")
+def page_kr_sector(): st.title("📊 섹터 모니터링"); st.write("준비 중입니다.")
+def page_kr_yield(): st.title("📈 섹터별 수익률"); st.write("준비 중입니다.")
+def page_kr_screening(): st.title("🔍 종목 스크리닝"); st.write("준비 중입니다.")
 
-def page_kr_sector(): 
-    st.title("📊 섹터 모니터링")
-    st.write("준비 중입니다.")
-
-def page_kr_yield(): 
-    st.title("📈 섹터별 수익률")
-    st.write("준비 중입니다.")
-
-def page_kr_screening(): 
-    st.title("🔍 종목 스크리닝")
-    st.write("준비 중입니다.")
-
-def page_us_score(): 
-    st.title("💯 EMS스코어 (US)")
-    st.info("기능 개발 중입니다.")
-
-def page_us_sector(): 
-    st.title("📊 섹터 모니터링 (US)")
-    st.write("준비 중입니다.")
-
-def page_us_yield(): 
-    st.title("📈 섹터별 수익률 (US)")
-    st.write("준비 중입니다.")
-
-def page_us_screening(): 
-    st.title("🔍 종목 스크리닝 (US)")
-    st.write("준비 중입니다.")
+def page_us_score(): st.title("💯 EMS스코어 (US)"); st.info("기능 개발 중입니다.")
+def page_us_sector(): st.title("📊 섹터 모니터링 (US)"); st.write("준비 중입니다.")
+def page_us_yield(): st.title("📈 섹터별 수익률 (US)"); st.write("준비 중입니다.")
+def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("준비 중입니다.")
 
 
 # -----------------------------------------------------------------------------
@@ -265,6 +162,8 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
+# [Native Navigation] 
+# event-elo와 동일한 방식입니다. 딕셔너리로 묶으면 드롭다운이 자동으로 생깁니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -273,7 +172,8 @@ pg = st.navigation({
 
 pg.run()
 
-# 푸터
-st.sidebar.markdown("---")
-current_year = datetime.now().year
-st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# [하단 푸터]
+with st.sidebar:
+    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    current_year = datetime.now().year
+    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
