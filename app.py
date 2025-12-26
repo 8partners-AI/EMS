@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 27 (이중 선 제거 + 섹션 헤더 노출 + 타이틀 상단 고정)
-VER = 27
+# [버전 관리] Ver: 28 (CSS 완전 초기화 - 네비게이션 간섭 0%)
+VER = 28
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (필수 요소만 남기고 다 뺐습니다)
+# 2. CSS 스타일링 
+# [중요] 네비게이션 위치, 화살표, 섹션 헤더를 건드리는 코드는 '단 한 줄도' 없습니다.
+# 오직 '폰트'와 '버튼 배경 투명화'만 남겼습니다.
 st.markdown("""
 <script>
 (function() {
@@ -40,34 +42,9 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 위치 고정 (맨 위)
+       [메뉴 버튼 디자인] - 이것만 남김 (박스 없애기)
        ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
-    }
-    
-    [data-testid="stSidebarNav"]::before {
-        content: "EMS QUANT AI";
-        display: block;
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
-        letter-spacing: -0.5px;
-        
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 10px;
-        
-        /* 구분선 1개만 깔끔하게 */
-        padding-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 20px;
-    }
-
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 (박스 투명화)
-       ---------------------------------------------------------------------- */
-    /* 메뉴 항목 폰트 */
+    /* 메뉴 텍스트 폰트 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
@@ -84,14 +61,10 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* 마우스 오버 */
+    /* 마우스 오버 시 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
-
-    /* [중요] 섹션 헤더(한국장, 미국장) 숨김 CSS 삭제함.
-       이제 Streamlit 순정 상태로 "한국장", "미국장" 글씨가 보일 것입니다.
-    */
 
 </style>
 """, unsafe_allow_html=True)
@@ -164,7 +137,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - 딕셔너리 구조 (드롭다운 자동 생성)
+# [st.navigation 설정] - 순정 구조 (딕셔너리)
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -180,7 +153,8 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [핵심] 딕셔너리로 넘겨야 섹션 헤더(한국장, 미국장)가 생깁니다.
+# [Native Navigation 실행]
+# 딕셔너리 구조를 사용하므로 '한국장', '미국장' 섹션이 자동으로 생성됩니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -190,15 +164,17 @@ pg = st.navigation({
 pg.run()
 
 # -----------------------------------------------------------------------------
-# [하단 푸터] - 이중 선 방지를 위해 st.divider() 삭제
+# [사이드바 하단 타이틀]
+# 순정 st.navigation은 메뉴를 최상단에 고정합니다.
+# 따라서 타이틀은 그 아래에 수동으로 넣어야 합니다.
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    # 빈 공간 확보 (필요 시)
-    st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
-    
-    current_year = datetime.now().year
-    st.markdown(f"""
-    <div style='text-align: center; color: #888; font-size: 0.8rem; border-top: 1px solid #eee; padding-top: 1rem;'>
-        © {current_year} EMS QUANT AI. All rights reserved.
+    st.markdown("---")
+    st.markdown("""
+    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem;'>
+        EMS QUANT AI
     </div>
     """, unsafe_allow_html=True)
+    
+    current_year = datetime.now().year
+    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
