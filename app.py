@@ -117,8 +117,6 @@ def page_home():
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
         
-        # [수정됨] HTML 코드를 왼쪽 끝으로 붙여서 들여쓰기를 제거했습니다.
-        # 이렇게 해야 코드가 아닌 HTML로 렌더링됩니다.
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
     <div>최종 업데이트: {current_time_str}</div>
@@ -203,6 +201,7 @@ pg.run()
 st.sidebar.markdown("---")
 current_year = datetime.now().year
 st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
 
 
