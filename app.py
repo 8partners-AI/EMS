@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 39 (CSS 완전 초기화 + HTML 노출 수정 + 순정 네비게이션)
-VER = 40
+# [버전 관리] 심플하게 버전만 적으세요
+VER = "v0.0.1"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -15,28 +15,27 @@ st.set_page_config(
 )
 
 # 2. CSS 스타일링
-st.markdown("""
+st.markdown(f"""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
-    html, body, [class*="css"] {
+    html, body, [class*="css"] {{
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    }
+    }}
 
     /* 상단 헤더, 푸터 숨김 */
-    header {visibility: visible !important; background: transparent !important;}
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+    header {{visibility: visible !important; background: transparent !important;}}
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 (이것만 남김)
-       네비게이션 상단에 'EMS QUANT AI' 제목을 넣습니다.
+       [1] 메인 타이틀 (EMS QUANT AI)
        ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] {
+    [data-testid="stSidebarNav"] {{
         padding-top: 1rem; 
-    }
+    }}
     
-    [data-testid="stSidebarNav"]::before {
+    [data-testid="stSidebarNav"]::before {{
         content: "EMS QUANT AI";
         display: block;
         font-size: 1.6rem;
@@ -47,17 +46,32 @@ st.markdown("""
         margin-left: 20px;
         margin-right: 20px;
         margin-top: 10px;
-        
-        padding-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
-    }
+        margin-bottom: 10px; /* 타이틀과 버전 사이 간격 좁힘 */
+    }}
 
-    /* [중요]
-       이전에 있던 '메뉴 텍스트 스타일', '섹션 헤더 스타일', '드롭다운 스타일' 등
-       네비게이션 내부를 건드리는 모든 CSS를 삭제했습니다.
-       이제 Streamlit 순정 기능이 100% 작동하여 GitHub 예제처럼 화살표가 잘 나올 것입니다.
-    */
+    /* ----------------------------------------------------------------------
+       [2] 버전 뱃지 ({VER}) - 요청하신 심플한 회색 배경 스타일
+       ---------------------------------------------------------------------- */
+    div[data-testid="stSidebarNav"] > ul::before {{
+        content: "{VER}"; 
+        
+        /* 뱃지 디자인 */
+        background-color: #F0F2F6; /* 옅은 회색 배경 */
+        color: #555;               /* 진한 회색 글자 */
+        padding: 4px 8px;          /* 안쪽 여백 */
+        border-radius: 6px;        /* 둥근 모서리 */
+        
+        /* 폰트 설정 */
+        font-size: 0.75rem;
+        font-weight: 600;
+        
+        /* 위치 잡기 */
+        display: inline-block;
+        margin-left: 20px;
+        margin-bottom: 25px;       /* 메뉴와의 간격 */
+    }}
+
+    /* 네비게이션 기능(화살표, 드롭다운) 간섭 CSS 없음 (순정 유지) */
 
 </style>
 """, unsafe_allow_html=True)
@@ -74,8 +88,7 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # [수정 완료] HTML 코드를 왼쪽 벽에 붙여서 그대로 노출되는 문제를 해결했습니다.
+        # HTML 코드 들여쓰기 제거 (노출 방지)
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
 <div>최종 업데이트: {current_time_str}</div>
@@ -132,7 +145,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [네비게이션 설정] - GitHub 'event-elo' 방식 (순정 딕셔너리 구조)
+# [네비게이션 설정]
 # -----------------------------------------------------------------------------
 
 # 1. 페이지 객체 생성
@@ -151,7 +164,7 @@ us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# 2. 딕셔너리 구조 (드롭다운 자동 생성)
+# 2. 딕셔너리 구조 (순정)
 pages = {
     "Main": [home_page],
     "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
@@ -167,4 +180,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
