@@ -3,7 +3,23 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-VER = 1112312312
+# [버전 관리] Ver: 10 (타이틀 구분선 추가 & 간격 조정)
+VER = 111111111111111
+
+# HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
+st.markdown("""
+<script>
+(function() {
+    if (window.location.protocol === 'http:') {
+        var httpsUrl = window.location.href.replace('http://', 'https://');
+        if (window.location.hostname === '8partners.co.kr' || 
+            window.location.hostname.includes('8partners.co.kr')) {
+            window.location.replace(httpsUrl);
+        }
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -13,7 +29,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (보내주신 Ver 10 코드 그대로 유지)
+# 2. CSS 스타일링 (여기가 핵심 디자인 파트입니다)
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -100,6 +116,59 @@ st.markdown("""
         text-transform: uppercase;
     }
 
+    /* ----------------------------------------------------------------------
+       [3] 드롭다운 화살표 개선 (핵심 수정 부분)
+       ---------------------------------------------------------------------- */
+    
+    /* 드롭다운 버튼 (섹션 헤더 버튼) 스타일 */
+    [data-testid="stSidebarNav"] button[aria-expanded] {
+        width: 100% !important;
+        padding: 10px 15px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #999 !important;
+        text-transform: uppercase !important;
+        background-color: transparent !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        cursor: pointer !important;
+    }
+    
+    /* 드롭다운 버튼 호버 효과 */
+    [data-testid="stSidebarNav"] button[aria-expanded]:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+        color: #1E3A8A !important;
+    }
+    
+    /* 드롭다운 화살표 아이콘 크기 및 스타일 개선 */
+    [data-testid="stSidebarNav"] button[aria-expanded] svg,
+    [data-testid="stSidebarNav"] button svg {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        min-height: 18px !important;
+        flex-shrink: 0 !important;
+        margin-left: 8px !important;
+        color: #666 !important;
+        fill: #666 !important;
+        transition: transform 0.2s ease !important;
+    }
+    
+    /* 드롭다운이 열렸을 때 화살표 회전 */
+    [data-testid="stSidebarNav"] button[aria-expanded="true"] svg {
+        transform: rotate(180deg) !important;
+        color: #1E3A8A !important;
+        fill: #1E3A8A !important;
+    }
+    
+    /* 드롭다운 버튼 호버 시 화살표 색상 변경 */
+    [data-testid="stSidebarNav"] button[aria-expanded]:hover svg {
+        color: #1E3A8A !important;
+        fill: #1E3A8A !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -115,13 +184,12 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        
         st.markdown(f"""
-<div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-    <div>최종 업데이트: {current_time_str}</div>
-    <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>verㅇㅇㅇㅇㅇ: {VER}</div>
-</div>
-""", unsafe_allow_html=True)
+        <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
+            <div>최종 업데이트: {current_time_str}</div>
+            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("한국장 종목 수", "2,847", "↑ 12")
@@ -192,7 +260,7 @@ pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
     "미국장": [pg_us_1, pg_us_2, pg_us_3, pg_us_4]
-}, position='sidebar')
+})
 
 pg.run()
 
@@ -200,8 +268,3 @@ pg.run()
 st.sidebar.markdown("---")
 current_year = datetime.now().year
 st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
-
-
-
-
