@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 13 (화살표 크기 확대 및 시각적 균형 보정)
-VER = 13
+# [버전 관리] Ver: 14 (화살표 Transform 강제 적용)
+VER = 14
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -23,7 +23,7 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더 숨김 (햄버거 메뉴 유지) */
+    /* 상단 헤더, 푸터 숨김 */
     header {visibility: visible !important; background: transparent !important;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
@@ -51,7 +51,7 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀
+       [2] 메뉴 디자인 (텍스트 링크)
        ---------------------------------------------------------------------- */
     [data-testid="stSidebar"] {
         background-color: #FAFAFA;
@@ -83,62 +83,70 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [3] ★ 드롭다운(Expander) 화살표 디자인 리셋 ★
+       [3] ★ 드롭다운(Expander) 화살표 강제 교정 (핵심) ★
        ---------------------------------------------------------------------- */
     
-    /* 1. 테두리 제거 */
+    /* 1. Expander 컨테이너 리셋 */
     [data-testid="stSidebar"] [data-testid="stExpander"] {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
     }
-
-    /* 2. details 태그 */
     [data-testid="stSidebar"] details {
         border: none !important;
         margin-bottom: 0 !important;
     }
 
-    /* 3. summary (헤더) 정렬 */
+    /* 2. 헤더(Summary)를 Flexbox로 만들어서 정렬 준비 */
     [data-testid="stSidebar"] details > summary {
         display: flex !important;
-        align-items: center !important; /* 수직 중앙 정렬 */
-        padding: 0.5rem 0.5rem !important;
+        align-items: center !important; /* 수직 중앙 */
+        padding: 0.6rem 0.5rem !important; /* 여백을 조금 더 줘서 숨통을 트임 */
         list-style: none !important;
         outline: none !important;
     }
 
-    /* 4. [핵심 수정] 아이콘(SVG) 크기 확대 및 스타일링 */
+    /* 3. [핵심] 화살표 아이콘(SVG) 강제 변형 */
     [data-testid="stSidebar"] details > summary svg {
-        width: 1.1rem !important;  /* [확대] 기존보다 키움 */
-        height: 1.1rem !important; /* [확대] */
-        margin-right: 0.6rem !important; /* 텍스트와 간격 벌림 */
-        color: #555 !important;    /* 색상을 진한 회색으로 */
-        stroke-width: 2.5px !important; /* [굵게] 선을 두껍게 해서 흐릿함 방지 */
+        /* 크기를 강제로 1.2배 키웁니다 (Scale) */
+        transform: scale(1.2) translateY(1px) !important; 
+        /* translateY(1px)는 화살표를 1픽셀 아래로 내려서 텍스트와 눈높이를 맞춥니다 */
+        
+        margin-right: 0.8rem !important; /* 텍스트와 거리 벌림 */
+        color: #666 !important;
+        stroke-width: 2px !important; /* 선 두께 보정 */
+        
+        /* 기존 마진/패딩 제거하여 간섭 방지 */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
         vertical-align: middle !important;
-        flex-shrink: 0 !important; /* 찌그러짐 방지 */
     }
 
-    /* 5. 텍스트 스타일 */
+    /* 4. 텍스트 스타일 */
     [data-testid="stSidebar"] details > summary p {
         margin: 0 !important;
         padding: 0 !important;
-        font-size: 0.95rem !important; /* 폰트 크기와 아이콘 크기 비율 맞춤 */
-        font-weight: 700 !important;   /* 좀 더 굵게 */
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
         color: #4B5563 !important;
-        line-height: 1.0 !important;
+        line-height: 1.0 !important; 
+        
+        /* 텍스트도 수직 중앙 정렬 보조 */
+        display: inline-flex !important;
+        align-items: center !important;
     }
 
     /* 호버 효과 */
     [data-testid="stSidebar"] details > summary:hover {
-         background-color: rgba(0,0,0,0.02) !important;
+         background-color: rgba(0,0,0,0.03) !important;
          border-radius: 6px !important;
+         color: #000 !important;
     }
-    
-    /* 호버 시 아이콘과 글자 색상 진하게 */
-    [data-testid="stSidebar"] details > summary:hover p,
     [data-testid="stSidebar"] details > summary:hover svg {
-        color: #000 !important;
+        color: #1E3A8A !important; /* 호버시 화살표 파란색 */
+    }
+    [data-testid="stSidebar"] details > summary:hover p {
+        color: #1E3A8A !important; /* 호버시 글자 파란색 */
     }
 
 </style>
@@ -146,7 +154,7 @@ st.markdown("""
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용 정의]
+# [페이지 내용]
 # -----------------------------------------------------------------------------
 
 def page_home():
