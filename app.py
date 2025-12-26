@@ -5,7 +5,15 @@ from datetime import datetime
 import os
 import sys
 
-# HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
+# [수정 1] 페이지 설정은 무조건 맨 처음에 와야 합니다 (에러 방지)
+st.set_page_config(
+    page_title="EMS QUANT AI",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# [수정 2] HTTP → HTTPS 자동 리다이렉트 (설정 직후 배치)
 st.markdown("""
 <script>
 (function() {
@@ -20,15 +28,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-# 페이지 설정
-st.set_page_config(
-    page_title="EMS QUANT AI",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# 기본 CSS 스타일링 (제미나이 코드 스타일 참고)
+# [수정 3] 기본 CSS 스타일링 (메뉴 버튼 살리기)
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -38,9 +38,12 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
     
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* [핵심 수정] header를 숨기면 사이드바를 여는 '햄버거 버튼(☰)'도 같이 사라집니다. */
+    /* 따라서 header 숨김 처리를 주석 처리하거나 삭제해야 메뉴를 다시 열 수 있습니다. */
+    /* header {visibility: hidden;} */ 
+
+    #MainMenu {visibility: hidden;} /* 우측 상단 점 3개 메뉴는 숨김 (선택사항) */
+    footer {visibility: hidden;}    /* 하단 Streamlit 푸터 숨김 */
 </style>
 """, unsafe_allow_html=True)
 
@@ -78,7 +81,7 @@ with st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded):
     
     for idx, (label, page) in enumerate(kr_menu_items):
         if st.button(label, use_container_width=True, key=f"kr_btn_{idx}",
-                    type="primary" if st.session_state.selected_page == page else "secondary"):
+                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
 
@@ -94,7 +97,7 @@ with st.sidebar.expander("미국장", expanded=st.session_state.us_expanded):
     
     for idx, (label, page) in enumerate(us_menu_items):
         if st.button(label, use_container_width=True, key=f"us_btn_{idx}",
-                    type="primary" if st.session_state.selected_page == page else "secondary"):
+                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
 
@@ -112,7 +115,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test888</div>
+            <div style='margin-top: 0.25rem;'>test9999</div>
         </div>
         """, unsafe_allow_html=True)
     
