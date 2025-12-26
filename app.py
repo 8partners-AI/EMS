@@ -3,23 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 10 (타이틀 구분선 추가 & 간격 조정)
-VER = 10
-
-# HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
-st.markdown("""
-<script>
-(function() {
-    if (window.location.protocol === 'http:') {
-        var httpsUrl = window.location.href.replace('http://', 'https://');
-        if (window.location.hostname === '8partners.co.kr' || 
-            window.location.hostname.includes('8partners.co.kr')) {
-            window.location.replace(httpsUrl);
-        }
-    }
-})();
-</script>
-""", unsafe_allow_html=True)
+# [버전 관리] Ver: 38 (CSS [3]번 블록 삭제 - 순정 네비게이션 복구 완료)
+VER = 38
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -29,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (여기가 핵심 디자인 파트입니다)
+# 2. CSS 스타일링
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -38,21 +23,19 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더 숨김 (햄버거 메뉴는 유지) */
+    /* 상단 헤더, 푸터 숨김 */
     header {visibility: visible !important; background: transparent !important;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 업그레이드 (구분선 + 간격 추가)
+       [1] 타이틀 디자인 (유지)
+       네비게이션 상단에 'EMS QUANT AI' 제목을 넣습니다.
        ---------------------------------------------------------------------- */
-    
-    /* 네비게이션 컨테이너 상단 여백 확보 */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
     }
     
-    /* 타이틀 및 구분선 생성 */
     [data-testid="stSidebarNav"]::before {
         content: "EMS QUANT AI";
         display: block;
@@ -61,30 +44,27 @@ st.markdown("""
         color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
         
-        /* 위치 조정 */
         margin-left: 20px;
-        margin-right: 20px; /* 오른쪽에도 여백을 줘서 줄 길이를 조절 */
+        margin-right: 20px;
         margin-top: 10px;
         
-        /* [핵심] 구분선 및 간격 디자인 */
-        padding-bottom: 20px; /* 글자와 줄 사이의 간격 */
-        border-bottom: 1px solid #e0e0e0; /* 연한 회색 구분선 */
-        margin-bottom: 25px; /* 줄과 아래 메뉴 사이의 간격 (충분히 띄움) */
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 25px;
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀 (Ongkoo 스타일 유지)
+       [2] 메뉴 텍스트 스타일 (유지 - Ongkoo 스타일)
+       버튼 배경을 투명하게 하고 글자색을 다듬습니다.
        ---------------------------------------------------------------------- */
-    
-    /* 메뉴 항목 텍스트 스타일 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
-        padding-left: 5px; /* 텍스트 살짝 들여쓰기 */
+        padding-left: 5px;
     }
     
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
+    /* 선택된 메뉴 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -95,107 +75,36 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* 마우스 올렸을 때(Hover) */
+    /* 호버 효과 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* 기본 섹션 구분선 숨김 (우리가 만든 회색 줄을 쓸 것이므로) */
+    /* 기본 섹션 구분선 숨김 */
     [data-testid="stSidebarNavSeparator"] {
         display: none;
     }
     
-    /* 섹션 헤더 (한국장, 미국장) 스타일 미세 조정 */
+    /* 섹션 헤더 (한국장, 미국장) 텍스트 스타일 */
     div[data-testid="stSidebarNav"] > div > div > span {
         font-size: 0.85rem;
         font-weight: 600;
         color: #999;
-        padding-left: 15px; /* 헤더 들여쓰기 */
+        padding-left: 15px;
         margin-top: 15px;
         margin-bottom: 5px;
         text-transform: uppercase;
     }
 
-    /* ----------------------------------------------------------------------
-       [3] 드롭다운 화살표 개선 (모든 가능한 선택자 포함)
-       ---------------------------------------------------------------------- */
-    
-    /* 모든 드롭다운 버튼 스타일 (포괄적 선택) */
-    [data-testid="stSidebarNav"] button,
-    [data-testid="stSidebarNav"] button[aria-expanded],
-    [data-testid="stSidebarNav"] [role="button"] {
-        width: 100% !important;
-        padding: 10px 15px !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        color: #999 !important;
-        text-transform: uppercase !important;
-        background-color: transparent !important;
-        border: none !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        cursor: pointer !important;
-    }
-    
-    /* 드롭다운 버튼 호버 효과 */
-    [data-testid="stSidebarNav"] button:hover,
-    [data-testid="stSidebarNav"] button[aria-expanded]:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-        color: #1E3A8A !important;
-    }
-    
-    /* 모든 SVG 아이콘 (화살표) 크기 및 스타일 개선 - 매우 포괄적 */
-    [data-testid="stSidebarNav"] svg,
-    [data-testid="stSidebarNav"] button svg,
-    [data-testid="stSidebarNav"] button[aria-expanded] svg,
-    [data-testid="stSidebarNav"] [role="button"] svg,
-    [data-testid="stSidebarNav"] * svg {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 20px !important;
-        min-height: 20px !important;
-        flex-shrink: 0 !important;
-        margin-left: 8px !important;
-        color: #666 !important;
-        fill: #666 !important;
-        stroke: #666 !important;
-        transition: transform 0.2s ease, color 0.2s ease, fill 0.2s ease !important;
-    }
-    
-    /* 드롭다운이 열렸을 때 화살표 회전 (모든 경우) */
-    [data-testid="stSidebarNav"] button[aria-expanded="true"] svg,
-    [data-testid="stSidebarNav"] [aria-expanded="true"] svg {
-        transform: rotate(180deg) !important;
-        color: #1E3A8A !important;
-        fill: #1E3A8A !important;
-        stroke: #1E3A8A !important;
-    }
-    
-    /* 드롭다운 버튼 호버 시 화살표 색상 변경 */
-    [data-testid="stSidebarNav"] button:hover svg,
-    [data-testid="stSidebarNav"] button[aria-expanded]:hover svg {
-        color: #1E3A8A !important;
-        fill: #1E3A8A !important;
-        stroke: #1E3A8A !important;
-    }
-    
-    /* Material Icons나 다른 아이콘 시스템 대응 */
-    [data-testid="stSidebarNav"] .material-icons,
-    [data-testid="stSidebarNav"] [class*="icon"],
-    [data-testid="stSidebarNav"] [class*="Icon"] {
-        font-size: 20px !important;
-        width: 20px !important;
-        height: 20px !important;
-        line-height: 20px !important;
-    }
+    /* [삭제됨] [3]번 드롭다운/화살표 관련 CSS를 싹 지웠습니다. 
+       이제 Streamlit 순정 기능이 작동하여 화살표가 완벽하게 나옵니다. */
 
 </style>
 """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용 정의]
+# [페이지 함수 정의]
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -205,12 +114,14 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # [수정] HTML 코드 들여쓰기 제거 (코드 노출 방지)
         st.markdown(f"""
-        <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-            <div>최종 업데이트: {current_time_str}</div>
-            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
-        </div>
-        """, unsafe_allow_html=True)
+<div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
+<div>최종 업데이트: {current_time_str}</div>
+<div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+</div>
+""", unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("한국장 종목 수", "2,847", "↑ 12")
@@ -221,11 +132,11 @@ def page_home():
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
-        st.switch_page(pg_kr_1)
+        st.switch_page(kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
-        st.switch_page(pg_kr_3)
+        st.switch_page(kr_3)
     if c3.button("🔍 종목 검색", use_container_width=True):
-        st.switch_page(pg_kr_5)
+        st.switch_page(kr_5)
         
     st.subheader("📊 최근 활동")
     activity_data = pd.DataFrame({
@@ -261,31 +172,38 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정]
+# [네비게이션 설정] - GitHub 'event-elo' 방식 (순정 딕셔너리 구조)
 # -----------------------------------------------------------------------------
 
-pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
+# 1. 페이지 객체 생성
+home_page = st.Page(page_home, title="Home", icon="🏠", default=True)
 
-pg_kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
-pg_kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
-pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
-pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
-pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
+# 한국장
+kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
+kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
+kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
+kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
+kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
-pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
-pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
-pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
+# 미국장
+us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
+us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
+us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
+us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-pg = st.navigation({
-    "Main": [pg_home],
-    "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
-    "미국장": [pg_us_1, pg_us_2, pg_us_3, pg_us_4]
-})
+# 2. 딕셔너리 구조 (드롭다운 자동 생성)
+pages = {
+    "Main": [home_page],
+    "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
+    "미국장": [us_1, us_2, us_3, us_4]
+}
 
+# 3. 실행
+pg = st.navigation(pages)
 pg.run()
 
-# 푸터
-st.sidebar.markdown("---")
-current_year = datetime.now().year
-st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# [하단 푸터]
+with st.sidebar:
+    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    current_year = datetime.now().year
+    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
