@@ -8,8 +8,8 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.5 (스크린샷 참조하여 업데이트)
-VER = "v0.2.5"
+# [버전 관리] v0.2.6 (스크린샷 참조하여 업데이트)
+VER = "v0.2.6"
 
 # [로고 크기 조절]
 LOGO_WIDTH = 150
@@ -82,7 +82,7 @@ st.markdown(f"""
        * 아래쪽 푸터 선과 색상 코드(#e0e0e0)와 두께(1px)를 완벽히 맞췄습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul {{
-        border-top: 1px solid #e0e0e0; /* [중요] 아래쪽 선과 동일한 스펙 */
+        border-top: 1px solid #g0g0g0; /* [중요] 아래쪽 선과 동일한 스펙 */
         padding-top: 20px;             
         position: relative;            
     }}
@@ -226,4 +226,5 @@ with st.sidebar:
     
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
