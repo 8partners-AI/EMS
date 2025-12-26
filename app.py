@@ -8,8 +8,8 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.5 (화살표 자동화 및 메뉴명 영문 변경)
-VER = "v0.2.5"
+# [버전 관리] v0.2.6 (회색선 진하게 & 시스템 상태 아이콘 수정)
+VER = "v0.2.6"
 
 # [로고 크기 조절]
 LOGO_WIDTH = 150
@@ -28,8 +28,7 @@ st.set_page_config(
 # [로고 이미지 처리]
 # -----------------------------------------------------------------------------
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# [수정됨] 요청하신 logo2.png로 변경
-logo_path = os.path.join(current_dir, "logo2.png") 
+logo_path = os.path.join(current_dir, "logo2.png")
 
 if os.path.exists(logo_path):
     try:
@@ -79,10 +78,10 @@ st.markdown(f"""
 
     /* ----------------------------------------------------------------------
        [2] 메뉴 컨테이너 (ul) + [상단 회색 구분선]
+       * 색상을 #e0e0e0 -> #bfbfbf (조금 더 진한 회색)으로 변경했습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul {{
-        /* [수정됨] #g0g0g0(오타) -> #e0e0e0 (유효한 밝은 회색, 아래쪽 선과 통일) */
-        border-top: 1px solid #e0e0e0; 
+        border-top: 1px solid #bfbfbf; /* [수정] 진한 회색 적용 */
         padding-top: 20px;             
         position: relative;            
     }}
@@ -93,7 +92,7 @@ st.markdown(f"""
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
         position: absolute;  
-        top: -38px;          /* 줄 바로 위, 타이틀 바로 아래 */
+        top: -38px;          
         left: 50%;           
         transform: translateX(-50%); 
         
@@ -132,16 +131,14 @@ def page_home():
     
     col1, col2, col3, col4 = st.columns(4)
     
-    # [수정됨] "↑ 12" -> "12"
-    # 문자열에 화살표를 넣지 않아도, 양수면 Streamlit이 자동으로 초록색 화살표를 붙여줍니다.
+    # 1, 2, 3번 컬럼 (자동 화살표 유지)
     col1.metric("국내 증시 종목 수", "2,847", "12") 
     col2.metric("미국 증시 종목 수", "5,234", "45")
     col3.metric("오늘 거래량", "1.2조원", "5.3%")
     
-    # "↑✓" 같은 특수기호는 자동생성이 안 되므로, 이런 경우엔 직접 넣는 게 맞습니다.
-    # 하지만 보통은 "정상" 상태라면 delta를 안 쓰거나, 그냥 색상만 입히기도 합니다.
-    # 여기서는 유지하겠습니다.
-    col4.metric("시스템 상태", "정상", "✓") 
+    # [수정됨] 4번 컬럼 (화살표 제거)
+    # delta를 쓰면 무조건 화살표가 생기므로, delta를 없애고 Value에 체크(✅)를 넣었습니다.
+    col4.metric("시스템 상태", "정상 ✅") 
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
@@ -224,7 +221,7 @@ with st.sidebar:
         <div style="
             margin-top: 3rem; 
             padding-bottom: 1rem;
-            border-top: 1px solid #e0e0e0; /* 상단 선과 100% 동일한 코드 */
+            border-top: 1px solid #bfbfbf; /* [수정] 상단과 동일하게 #bfbfbf 적용 */
         "></div>
     """, unsafe_allow_html=True)
     
