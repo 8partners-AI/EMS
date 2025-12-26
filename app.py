@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 import sys
 
-# 1. 페이지 설정 (반드시 최상단)
+# 1. 페이지 설정 (최상단 필수)
 st.set_page_config(
     page_title="EMS QUANT AI",
     page_icon="📊",
@@ -28,7 +28,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-# 3. [핵심] CSS 스타일링: 버튼을 '텍스트 링크'처럼 개조
+# 3. [핵심] CSS 스타일링: Ongkoo-ai 스타일 완벽 재현
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -39,78 +39,81 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [사이드바 메뉴 혁신 - ongkoo-ai 스타일] 
-       버튼의 '박스' 느낌을 완전히 제거하고 '글자'만 남깁니다.
+       [사이드바 디자인 혁신] 
+       1. 드롭다운(Expander)의 박스 테두리 제거
+       2. 버튼의 박스 형태 제거 및 왼쪽 정렬 (텍스트 메뉴화)
        ---------------------------------------------------------------------- */
     
-    /* 사이드바 배경색: 아주 연한 회색으로 고급스럽게 */
+    /* 사이드바 배경색: 아주 연한 톤 */
     [data-testid="stSidebar"] {
-        background-color: #F8F9FA; 
+        background-color: #F8F9FA;
     }
 
-    /* 1. 기본 버튼 스타일 초기화 (투명화) */
-    [data-testid="stSidebar"] [data-testid="stButton"] > button {
-        width: 100%;
-        border: none;
-        background-color: transparent; /* 배경 투명 */
-        color: #4B5563; /* 진한 회색 글씨 */
-        text-align: left; /* [중요] 글자 왼쪽 정렬 */
-        display: flex;
-        justify-content: flex-start; /* [중요] Flexbox 왼쪽 정렬 */
-        padding: 0.5rem 0.75rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        box-shadow: none !important;
-        transition: all 0.2s ease;
-    }
-
-    /* 2. 마우스 올렸을 때 (Hover) - 살짝 진해짐 */
-    [data-testid="stSidebar"] [data-testid="stButton"] > button:hover {
-        background-color: #F3F4F6; /* 아주 연한 회색 */
-        color: #111827; /* 검정색 글씨 */
-        border: none;
-    }
-    
-    /* 3. 클릭하거나 선택된 버튼 (Active) - ongkoo-ai 스타일 */
-    /* Streamlit에서 type="primary"로 설정한 버튼에만 적용 */
-    [data-testid="stSidebar"] [data-testid="stButton"] > button[kind="primary"] {
-        background-color: #EFF6FF !important; /* 연한 하늘색 배경 */
-        color: #1D4ED8 !important; /* 진한 파란색 글씨 */
-        font-weight: 700 !important;
-        border: none !important;
-        border-radius: 6px; /* 둥근 모서리 */
-    }
-
-    /* 4. 클릭 효과(Focus) 제거 (빨간 테두리 방지) */
-    [data-testid="stSidebar"] [data-testid="stButton"] > button:focus:not(:active) {
-        border: none;
-        box-shadow: none;
-        color: #4B5563;
-    }
-
-    /* 5. Expander(드롭다운) 스타일링 - 박스 테두리 제거 */
+    /* [드롭다운(Expander) 스타일] - 박스 테두리 제거가 핵심 */
     [data-testid="stSidebar"] [data-testid="stExpander"] {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
+        margin-bottom: 0rem !important; /* 간격 축소 */
     }
     
-    /* Expander 제목 스타일 */
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details {
+        border: none !important;
+    }
+
+    /* 드롭다운 헤더(제목) 스타일 */
     [data-testid="stSidebar"] .streamlit-expanderHeader {
         font-size: 0.9rem;
         font-weight: 600;
-        color: #6B7280; /* 회색 */
+        color: #555;
         background-color: transparent !important;
-        padding: 0.5rem 0;
+        padding: 0.5rem 0 0.5rem 0.5rem; /* 여백 조정 */
     }
-    /* Expander 제목 마우스 오버 시 */
+    
+    /* 드롭다운 헤더 마우스 오버 시 */
     [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
-        color: #111827;
+        color: #000;
     }
 
-    /* ---------------------------------------------------------------------- */
+    /* [버튼 스타일] - 텍스트 링크처럼 만들기 */
+    [data-testid="stSidebar"] .stButton > button {
+        width: 100%;
+        border: none !important;
+        background-color: transparent !important;
+        color: #4B5563 !important; /* 짙은 회색 */
+        text-align: left !important; /* [중요] 왼쪽 정렬 */
+        display: flex !important;
+        justify-content: flex-start !important;
+        padding: 0.4rem 0.5rem 0.4rem 1.5rem !important; /* 들여쓰기로 계층 구조 표현 */
+        font-size: 0.9rem !important;
+        font-weight: 400 !important;
+        box-shadow: none !important;
+        margin-top: -0.5rem !important; /* 버튼 간격 좁히기 */
+    }
 
-    /* 상단 헤더, 푸터 숨김 (메뉴 버튼은 살림) */
+    /* 버튼 마우스 오버 (Hover) */
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background-color: rgba(0,0,0,0.03) !important; /* 아주 연한 회색 */
+        color: #000 !important;
+        font-weight: 500 !important;
+    }
+
+    /* [선택된 메뉴 스타일] - type="primary" 인 경우 */
+    [data-testid="stSidebar"] .stButton > button[kind="primary"] {
+        background-color: #EFF6FF !important; /* 연한 하늘색 배경 */
+        color: #1E3A8A !important; /* 진한 파란색 글씨 */
+        font-weight: 700 !important;
+        border-left: 3px solid #1E3A8A !important; /* 왼쪽에 포인트 컬러바 */
+        padding-left: 1.3rem !important; /* 테두리 두께만큼 보정 */
+    }
+    
+    /* Home 버튼 별도 스타일 (들여쓰기 없앰) */
+    [data-key="menu_home"] > button {
+        padding-left: 0.5rem !important;
+        margin-top: 0 !important;
+    }
+
+    /* 상단 헤더 숨김 (깔끔하게) */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 
@@ -119,7 +122,7 @@ st.markdown("""
 
 # --- 사이드바 헤더 ---
 st.sidebar.markdown("""
-<div style='font-size: 1.4rem; font-weight: 800; color: #1E3A8A; margin-bottom: 1.5rem; padding-left: 0.5rem; letter-spacing: -0.5px;'>
+<div style='font-size: 1.4rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem; padding-left: 0.5rem; letter-spacing: -0.5px;'>
 EMS QUANT AI
 </div>
 """, unsafe_allow_html=True)
@@ -130,19 +133,17 @@ if 'selected_page' not in st.session_state:
 
 # --- 메뉴 구성 로직 ---
 
-# 1. 메인 메뉴 (Home) - 구분선 대신 깔끔한 헤더 텍스트
-st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:600; color:#9CA3AF; margin-bottom:0.5rem; padding-left:0.75rem; text-transform:uppercase;'>Main Menu</div>", unsafe_allow_html=True)
-
-# 버튼 생성 로직: 선택된 페이지면 primary(파란색 강조), 아니면 secondary(투명)
-if st.sidebar.button("🏠 Home", key="home_btn", use_container_width=True,
+# 1. 메인 메뉴 (Home)
+st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
+if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True,
                      type="primary" if st.session_state.selected_page == "🏠 Home" else "secondary"):
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
-st.sidebar.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True) # 공백
+st.sidebar.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
 
 # 2. 한국장 (Expander)
-# expanded=True로 설정하여 기본적으로 열려있게 함
+# 박스 테두리를 없앴으므로, 텍스트가 자연스럽게 그룹화된 것처럼 보입니다.
 with st.sidebar.expander("🇰🇷 한국장", expanded=True):
     kr_menu = {
         "📄 일일 리포트": "📄 일일 리포트",
@@ -158,7 +159,7 @@ with st.sidebar.expander("🇰🇷 한국장", expanded=True):
             st.session_state.selected_page = page_name
             st.rerun()
 
-st.sidebar.markdown("<div style='margin-top:0.5rem;'></div>", unsafe_allow_html=True) # 공백
+st.sidebar.markdown("<div style='margin-top:0.5rem;'></div>", unsafe_allow_html=True)
 
 # 3. 미국장 (Expander)
 with st.sidebar.expander("🇺🇸 미국장", expanded=True):
@@ -189,7 +190,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
             <div>최종 업데이트: {current_time}</div>
-            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: test333</div>
+            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'> test789</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -202,7 +203,7 @@ if menu == "🏠 Home":
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
-    # 빠른 접근 버튼도 스타일 일관성을 위해 텍스트 버튼 느낌을 줄 수 있지만, 여기는 박스형태가 나을 수 있어 기본 유지
+    # 빠른 접근 버튼은 여전히 박스 형태가 직관적이므로 유지 (원하시면 이것도 변경 가능)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.session_state.selected_page = "📄 일일 리포트"
         st.rerun()
