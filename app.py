@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 33 (event-elo 스타일 순정 메뉴 + 타이틀 상단 고정)
-VER = 33
+# [버전 관리] Ver: 34 (네비게이션 100% 순정 유지 + 사이드바 컨테이너 타이틀 삽입)
+VER = 34
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -15,8 +15,8 @@ st.set_page_config(
 )
 
 # 2. CSS 스타일링
-# [핵심] 메뉴 버튼, 화살표, 폰트를 건드리는 CSS를 '완전히' 제거했습니다.
-# 오직 'EMS QUANT AI' 타이틀을 맨 위에 박아넣는 코드 하나만 남겼습니다.
+# [핵심] 네비게이션(stSidebarNav)을 건드리는 코드는 0줄입니다.
+# 대신 '사이드바 전체 틀(stSidebarContent)'에 제목을 넣습니다.
 st.markdown("""
 <script>
 (function() {
@@ -42,16 +42,12 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [타이틀 위치 상단 고정]
-       이 코드는 네비게이션 메뉴 자체를 건드리지 않고,
-       메뉴 머리 위에 '공간'을 만들어서 제목(EMS QUANT AI)만 넣습니다.
-       이것이 유일하게 적용된 커스텀 디자인입니다.
+       [타이틀 배치 전략: 부모 컨테이너 이용]
+       네비게이션(자식)을 건드리지 않고, 사이드바(부모)의 맨 앞에 타이틀을 만듭니다.
+       이렇게 하면 타이틀이 먼저 나오고, 그 다음에 순정 네비게이션이 자연스럽게 이어집니다.
        ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
-    }
     
-    [data-testid="stSidebarNav"]::before {
+    [data-testid="stSidebarContent"]::before {
         content: "EMS QUANT AI";
         display: block;
         font-size: 1.6rem;
@@ -61,18 +57,17 @@ st.markdown("""
         
         margin-left: 20px;
         margin-right: 20px;
-        margin-top: 10px;
+        margin-top: 20px;
         
         /* 구분선 */
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
-    
-    /* [분석 결론]
-       Github 'event-elo' 처럼 완벽한 화살표 정렬을 위해
-       버튼 투명화, 폰트 수정 등 메뉴에 간섭하는 모든 CSS를 삭제했습니다.
-       이제 Streamlit 순정 상태로 렌더링되므로 화살표가 완벽하게 나옵니다.
+
+    /* [약속] 
+       1. 네비게이션(stSidebarNav) 관련 CSS 없음 -> 드롭다운/화살표 순정 복구
+       2. 버튼 투명화 CSS 없음 -> GitHub 예제와 동일한 순정 스타일 유지
     */
 
 </style>
@@ -90,7 +85,7 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        # HTML 들여쓰기 제거 (코드 노출 방지)
+        # HTML 들여쓰기 제거
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
 <div>최종 업데이트: {current_time_str}</div>
@@ -163,7 +158,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation] 딕셔너리 구조 -> 드롭다운 자동 생성 (순정)
+# [Native Navigation]
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
