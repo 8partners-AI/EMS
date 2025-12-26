@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.1.3
-VER = "v0.1.3"
+# [버전 관리] v0.1.4
+VER = "v0.1.4"
 
 # [사이드바 로고 이미지 설정]
 # ▼ 아래 따옴표 안에 원하는 이미지의 경로(예: "image.png")나 URL을 넣으세요. ▼
 # (지금은 테스트용 임시 이미지가 들어있습니다. 꼭 교체하세요!)
-SIDEBAR_LOGO_URL = "https://via.placeholder.com/200x70/0B1E31/FFFFFF?text=YOUR+LOGO+HERE"
+SIDEBAR_LOGO_URL = "file:///C:/Users/WD/Desktop/logo.png"
 
 
 # 1. 페이지 설정
@@ -194,4 +194,5 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
