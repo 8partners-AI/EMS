@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 7 (Hidden Navigation + Custom Sidebar)
-VER = 7
+# [버전 관리] Ver: 8 (기능은 Ver 7 + 디자인은 Ver 5)
+VER = 8
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. HTTP → HTTPS 리다이렉트 및 기본 스타일링
+# 2. HTTP → HTTPS 리다이렉트 및 CSS 스타일링
 st.markdown("""
 <script>
 (function() {
@@ -34,35 +34,74 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
     
-    /* 상단 헤더 숨김 (햄버거 메뉴는 유지됨) */
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* 사이드바 스타일 깔끔하게 */
+    /* 사이드바 배경 */
     [data-testid="stSidebar"] {
         background-color: #FAFAFA;
     }
+
+    /* ----------------------------------------------------------------------
+       [핵심] st.page_link 디자인 뜯어고치기 (Ongkoo 스타일)
+       기본적인 버튼 모양(회색 박스)을 제거하고 텍스트처럼 만듭니다.
+       ---------------------------------------------------------------------- */
     
-    /* 드롭다운(Expander) 테두리 제거 - 깔끔한 텍스트 그룹처럼 보이게 */
+    /* 1. 기본 링크 스타일: 투명 배경, 테두리 제거 */
+    [data-testid="stPageLink-NavLink"] {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #555 !important;
+        text-align: left !important;
+        font-size: 0.95rem !important;
+        font-weight: 400 !important;
+        padding: 0.3rem 0.5rem !important;
+        margin: 0 !important;
+        border-radius: 4px !important;
+    }
+
+    /* 2. 마우스 올렸을 때 (Hover) */
+    [data-testid="stPageLink-NavLink"]:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+        color: #000 !important;
+        font-weight: 600 !important;
+    }
+
+    /* 3. [중요] 현재 보고 있는 페이지 (Active) 스타일 */
+    /* aria-current="page" 속성을 감지하여 스타일 적용 */
+    [data-testid="stPageLink-NavLink"][aria-current="page"] {
+        background-color: transparent !important; /* 배경 투명 (요청사항) */
+        color: #1E3A8A !important; /* 진한 남색 글씨 */
+        font-weight: 800 !important;
+        border-left: 3px solid #1E3A8A !important; /* 왼쪽에 파란 줄 */
+        padding-left: calc(0.5rem - 3px) !important; /* 줄 두께만큼 보정 */
+    }
+
+    /* 4. 드롭다운(Expander) 테두리 제거 */
     [data-testid="stSidebar"] [data-testid="stExpander"] {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
     }
     
-    /* Page Link 스타일 미세 조정 (기본적으로 깔끔하지만 간격 조정) */
-    [data-testid="stSidebar"] [data-testid="stPageLink-NavLink"] {
+    /* 드롭다운 헤더 */
+    [data-testid="stSidebar"] .streamlit-expanderHeader {
         font-size: 0.9rem;
-        padding-top: 0.3rem;
-        padding-bottom: 0.3rem;
+        font-weight: 600;
+        color: #666;
+        padding-left: 0.5rem;
+        background-color: transparent !important;
     }
+    
 </style>
 """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# [1] 페이지 함수 정의 (내용은 그대로)
+# [1] 페이지 함수 (컨텐츠) - 이전과 동일
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -87,6 +126,7 @@ def page_home():
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
+    # switch_page를 사용하여 부드럽게 이동
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
@@ -128,41 +168,32 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [2] 페이지 객체 생성 (st.Page)
+# [2] 페이지 정의 (URL 및 제목)
 # -----------------------------------------------------------------------------
-# 여기서 각 페이지의 '주소(URL)'와 '제목'을 정의합니다.
-
 pg_home = st.Page(page_home, title="Home", icon="🏠", url_path="home")
 
-# 한국장
 pg_kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄", url_path="kr_report")
 pg_kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯", url_path="kr_score")
 pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊", url_path="kr_sector")
 pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈", url_path="kr_yield")
 pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍", url_path="kr_screening")
 
-# 미국장
 pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯", url_path="us_score")
 pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊", url_path="us_sector")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈", url_path="us_yield")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍", url_path="us_screening")
 
-
 # -----------------------------------------------------------------------------
-# [3] 네비게이션 설정 (★핵심: position="hidden")
+# [3] 네비게이션 숨김 처리 (기능만 활성화)
 # -----------------------------------------------------------------------------
-# 화면에 자동으로 그리지 말고(hidden), 기능만 활성화합니다.
 pg = st.navigation(
     [pg_home, pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5, pg_us_1, pg_us_2, pg_us_3, pg_us_4],
-    position="hidden" 
+    position="hidden"
 )
 
-
 # -----------------------------------------------------------------------------
-# [4] 사이드바 '수동' 조립 (여기가 진짜 화면을 만드는 곳)
+# [4] 커스텀 사이드바 구성 (Page Link + CSS 해킹 조합)
 # -----------------------------------------------------------------------------
-# 여기서 st.page_link를 쓰면 '버튼'이 아니라 '깔끔한 텍스트 링크'가 됩니다.
-
 with st.sidebar:
     # 1. 타이틀
     st.markdown("""
@@ -173,12 +204,13 @@ with st.sidebar:
     
     # 2. 메인 메뉴
     st.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
+    
+    # st.page_link는 기능적으로 완벽하며, 위의 CSS로 디자인을 덮어씌웠습니다.
     st.page_link(pg_home, label="Home", icon="🏠")
     
     st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
 
-    # 3. 한국장 (드롭다운 + 깔끔한 링크)
-    # expander를 썼으니 접었다 폈다 가능!
+    # 3. 한국장 (드롭다운)
     with st.expander("🇰🇷 한국장", expanded=True):
         st.page_link(pg_kr_1, label="일일 리포트", icon="📄")
         st.page_link(pg_kr_2, label="EMS스코어", icon="💯")
@@ -186,13 +218,12 @@ with st.sidebar:
         st.page_link(pg_kr_4, label="섹터별 수익률", icon="📈")
         st.page_link(pg_kr_5, label="종목 스크리닝", icon="🔍")
 
-    # 4. 미국장 (드롭다운 + 깔끔한 링크)
+    # 4. 미국장 (드롭다운)
     with st.expander("🇺🇸 미국장", expanded=True):
         st.page_link(pg_us_1, label="EMS스코어 (US)", icon="💯")
         st.page_link(pg_us_2, label="섹터 모니터링 (US)", icon="📊")
         st.page_link(pg_us_3, label="섹터별 수익률 (US)", icon="📈")
         st.page_link(pg_us_4, label="종목 스크리닝 (US)", icon="🔍")
-
 
 # -----------------------------------------------------------------------------
 # [5] 앱 실행
