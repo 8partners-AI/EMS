@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 9 (st.navigation + CSS 타이틀 강제 삽입 + 색상 제거)
-VER = 9
+# [버전 관리] Ver: 10 (타이틀 구분선 추가 & 간격 조정)
+VER = 10
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (여기가 핵심입니다)
+# 2. CSS 스타일링 (여기가 핵심 디자인 파트입니다)
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -29,42 +29,50 @@ st.markdown("""
     footer {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 위치 해결 (CSS Magic)
-       st.navigation이 만든 컨테이너(stSidebarNav)의 '앞쪽(before)'에
-       가상의 공간을 만들고 거기에 텍스트를 집어넣습니다.
-       이렇게 하면 로직상으로는 없어도 시각적으로는 맨 위에 타이틀이 박힙니다.
+       [1] 타이틀 디자인 업그레이드 (구분선 + 간격 추가)
        ---------------------------------------------------------------------- */
+    
+    /* 네비게이션 컨테이너 상단 여백 확보 */
     [data-testid="stSidebarNav"] {
-        padding-top: 1rem; /* 타이틀 들어갈 공간 확보 */
+        padding-top: 1rem; 
     }
     
+    /* 타이틀 및 구분선 생성 */
     [data-testid="stSidebarNav"]::before {
         content: "EMS QUANT AI";
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
         color: #1E3A8A; /* 진한 남색 */
-        margin-left: 20px;
-        margin-bottom: 20px;
         letter-spacing: -0.5px;
+        
+        /* 위치 조정 */
+        margin-left: 20px;
+        margin-right: 20px; /* 오른쪽에도 여백을 줘서 줄 길이를 조절 */
+        margin-top: 10px;
+        
+        /* [핵심] 구분선 및 간격 디자인 */
+        padding-bottom: 20px; /* 글자와 줄 사이의 간격 */
+        border-bottom: 1px solid #e0e0e0; /* 연한 회색 구분선 */
+        margin-bottom: 25px; /* 줄과 아래 메뉴 사이의 간격 (충분히 띄움) */
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀 (Home 버튼 색상 제거 등)
+       [2] 메뉴 디자인 커스텀 (Ongkoo 스타일 유지)
        ---------------------------------------------------------------------- */
     
-    /* 메뉴 항목 기본 스타일 */
+    /* 메뉴 항목 텍스트 스타일 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
+        padding-left: 5px; /* 텍스트 살짝 들여쓰기 */
     }
     
-    /* 선택된 메뉴(Active) 스타일링 - 배경색 제거 */
-    /* Streamlit은 선택된 항목에 배경색을 넣는데, 이걸 투명하게 바꿉니다. */
+    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important; /* 배경 투명 (핵심) */
-        color: #1E3A8A !important; /* 글자색만 변경 */
+        background-color: transparent !important;
+        color: #1E3A8A !important;
     }
     
     [data-testid="stSidebarNav"] a[aria-current="page"] span {
@@ -72,21 +80,23 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* 마우스 올렸을 때(Hover) 살짝 진하게 */
+    /* 마우스 올렸을 때(Hover) */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* 섹션 헤더 (한국장, 미국장) 스타일 */
+    /* 기본 섹션 구분선 숨김 (우리가 만든 회색 줄을 쓸 것이므로) */
     [data-testid="stSidebarNavSeparator"] {
-        display: none; /* 구분선 제거 (선택사항) */
+        display: none;
     }
+    
+    /* 섹션 헤더 (한국장, 미국장) 스타일 미세 조정 */
     div[data-testid="stSidebarNav"] > div > div > span {
         font-size: 0.85rem;
         font-weight: 600;
         color: #999;
-        padding-left: 10px;
-        margin-top: 10px;
+        padding-left: 15px; /* 헤더 들여쓰기 */
+        margin-top: 15px;
         margin-bottom: 5px;
         text-transform: uppercase;
     }
@@ -162,7 +172,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - 여기가 질문자님이 원하시던 그 기능입니다.
+# [st.navigation 설정]
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -178,7 +188,6 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# 네비게이션 그룹핑 (섹션 제목이 자동으로 작게 표시됨)
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -187,7 +196,7 @@ pg = st.navigation({
 
 pg.run()
 
-# 푸터 (st.navigation 사용 시 사이드바 맨 아래에 붙습니다)
+# 푸터
 st.sidebar.markdown("---")
 current_year = datetime.now().year
 st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
