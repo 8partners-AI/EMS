@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 31 (메뉴 실종 해결 + 순정 네비게이션 + 타이틀 절대좌표 고정)
-VER = 31
+# [버전 관리] Ver: 32 (타이틀 강제 상단 CSS 제거 - 메뉴 노출 최우선)
+VER = 32
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -40,38 +40,33 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [타이틀 절대 위치 고정]
-       이전 버전에서 메뉴가 사라진 이유는 타이틀이 메뉴 공간을 침범했기 때문입니다.
-       이번에는 position: absolute를 사용하여 메뉴와 별개 층(Layer)에 그립니다.
+       [메뉴 버튼 디자인] - 투명하고 깔끔하게 (Ongkoo 스타일)
        ---------------------------------------------------------------------- */
-    
-    /* 1. 네비게이션 컨테이너에 공간 확보 */
-    [data-testid="stSidebarNav"] {
-        padding-top: 4.5rem !important; /* 타이틀 들어갈 공간만큼 메뉴를 아래로 밉니다 */
-        position: relative; /* 기준점 설정 */
+    /* 메뉴 텍스트 폰트 */
+    [data-testid="stSidebarNav"] span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #555;
     }
     
-    /* 2. 타이틀 강제 삽입 (공중 부양) */
-    [data-testid="stSidebarNav"]::before {
-        content: "EMS QUANT AI";
-        position: absolute; /* 절대 위치 고정 */
-        top: 20px;
-        left: 20px;
-        width: calc(100% - 40px); /* 너비 최적화 */
-        
-        display: block;
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #1E3A8A; 
-        letter-spacing: -0.5px;
-        
-        padding-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
+    /* 선택된 메뉴(Active) - 배경 투명, 글자 진하게 */
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: transparent !important;
+        color: #1E3A8A !important;
+    }
+    [data-testid="stSidebarNav"] a[aria-current="page"] span {
+        color: #1E3A8A !important;
+        font-weight: 800 !important;
     }
 
-    /* [약속 이행] 
-       네비게이션 버튼, 화살표, 텍스트, 드롭다운을 건드리는 CSS는 
-       단 하나도 없습니다. 100% 순정 상태입니다.
+    /* 마우스 오버 시 */
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+    }
+
+    /* [중요] 
+       타이틀을 강제로 위로 올리는 ::before 코드를 삭제했습니다.
+       이제 메뉴를 가리는 요소가 없으니 메뉴가 100% 보여야 정상입니다.
     */
 
 </style>
@@ -89,7 +84,6 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        # [HTML 들여쓰기 제거] 오른쪽 상단 HTML 코드 노출 방지
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
 <div>최종 업데이트: {current_time_str}</div>
@@ -162,8 +156,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation] 
-# event-elo와 동일한 방식입니다. 딕셔너리로 묶으면 드롭다운이 자동으로 생깁니다.
+# [Native Navigation] 딕셔너리로 그룹화
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -172,8 +165,17 @@ pg = st.navigation({
 
 pg.run()
 
-# [하단 푸터]
+# -----------------------------------------------------------------------------
+# [사이드바 타이틀] - 메뉴 아래에 안전하게 배치
+# -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    st.divider() # 구분선
+    # 여기서 타이틀을 출력합니다. (메뉴 아래에 나옵니다)
+    st.markdown("""
+    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem;'>
+        EMS QUANT AI
+    </div>
+    """, unsafe_allow_html=True)
+    
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
