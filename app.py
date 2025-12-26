@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 8 (기능은 Ver 7 + 디자인은 Ver 5)
-VER = 8
+# [버전 관리] Ver: 9 (st.navigation + CSS 타이틀 강제 삽입 + 색상 제거)
+VER = 9
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,94 +14,89 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. HTTP → HTTPS 리다이렉트 및 CSS 스타일링
+# 2. CSS 스타일링 (여기가 핵심입니다)
 st.markdown("""
-<script>
-(function() {
-    if (window.location.protocol === 'http:') {
-        var httpsUrl = window.location.href.replace('http://', 'https://');
-        if (window.location.hostname === '8partners.co.kr' || 
-            window.location.hostname.includes('8partners.co.kr')) {
-            window.location.replace(httpsUrl);
-        }
-    }
-})();
-</script>
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
     html, body, [class*="css"] {
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
-    
-    /* 상단 헤더, 푸터 숨김 */
+
+    /* 상단 헤더 숨김 (햄버거 메뉴는 유지) */
+    header {visibility: visible !important; background: transparent !important;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    header {visibility: hidden;}
     
-    /* 사이드바 배경 */
-    [data-testid="stSidebar"] {
-        background-color: #FAFAFA;
+    /* ----------------------------------------------------------------------
+       [1] 타이틀 위치 해결 (CSS Magic)
+       st.navigation이 만든 컨테이너(stSidebarNav)의 '앞쪽(before)'에
+       가상의 공간을 만들고 거기에 텍스트를 집어넣습니다.
+       이렇게 하면 로직상으로는 없어도 시각적으로는 맨 위에 타이틀이 박힙니다.
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebarNav"] {
+        padding-top: 1rem; /* 타이틀 들어갈 공간 확보 */
+    }
+    
+    [data-testid="stSidebarNav"]::before {
+        content: "EMS QUANT AI";
+        display: block;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1E3A8A; /* 진한 남색 */
+        margin-left: 20px;
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
     }
 
     /* ----------------------------------------------------------------------
-       [핵심] st.page_link 디자인 뜯어고치기 (Ongkoo 스타일)
-       기본적인 버튼 모양(회색 박스)을 제거하고 텍스트처럼 만듭니다.
+       [2] 메뉴 디자인 커스텀 (Home 버튼 색상 제거 등)
        ---------------------------------------------------------------------- */
     
-    /* 1. 기본 링크 스타일: 투명 배경, 테두리 제거 */
-    [data-testid="stPageLink-NavLink"] {
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        color: #555 !important;
-        text-align: left !important;
-        font-size: 0.95rem !important;
-        font-weight: 400 !important;
-        padding: 0.3rem 0.5rem !important;
-        margin: 0 !important;
-        border-radius: 4px !important;
+    /* 메뉴 항목 기본 스타일 */
+    [data-testid="stSidebarNav"] span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #555;
     }
-
-    /* 2. 마우스 올렸을 때 (Hover) */
-    [data-testid="stPageLink-NavLink"]:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-        color: #000 !important;
-        font-weight: 600 !important;
+    
+    /* 선택된 메뉴(Active) 스타일링 - 배경색 제거 */
+    /* Streamlit은 선택된 항목에 배경색을 넣는데, 이걸 투명하게 바꿉니다. */
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: transparent !important; /* 배경 투명 (핵심) */
+        color: #1E3A8A !important; /* 글자색만 변경 */
     }
-
-    /* 3. [중요] 현재 보고 있는 페이지 (Active) 스타일 */
-    /* aria-current="page" 속성을 감지하여 스타일 적용 */
-    [data-testid="stPageLink-NavLink"][aria-current="page"] {
-        background-color: transparent !important; /* 배경 투명 (요청사항) */
-        color: #1E3A8A !important; /* 진한 남색 글씨 */
+    
+    [data-testid="stSidebarNav"] a[aria-current="page"] span {
+        color: #1E3A8A !important;
         font-weight: 800 !important;
-        border-left: 3px solid #1E3A8A !important; /* 왼쪽에 파란 줄 */
-        padding-left: calc(0.5rem - 3px) !important; /* 줄 두께만큼 보정 */
     }
 
-    /* 4. 드롭다운(Expander) 테두리 제거 */
-    [data-testid="stSidebar"] [data-testid="stExpander"] {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
+    /* 마우스 올렸을 때(Hover) 살짝 진하게 */
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: rgba(0,0,0,0.03) !important;
     }
-    
-    /* 드롭다운 헤더 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader {
-        font-size: 0.9rem;
+
+    /* 섹션 헤더 (한국장, 미국장) 스타일 */
+    [data-testid="stSidebarNavSeparator"] {
+        display: none; /* 구분선 제거 (선택사항) */
+    }
+    div[data-testid="stSidebarNav"] > div > div > span {
+        font-size: 0.85rem;
         font-weight: 600;
-        color: #666;
-        padding-left: 0.5rem;
-        background-color: transparent !important;
+        color: #999;
+        padding-left: 10px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
     }
-    
+
 </style>
 """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# [1] 페이지 함수 (컨텐츠) - 이전과 동일
+# [페이지 내용 정의]
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -126,7 +121,6 @@ def page_home():
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
-    # switch_page를 사용하여 부드럽게 이동
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
@@ -168,64 +162,32 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [2] 페이지 정의 (URL 및 제목)
+# [st.navigation 설정] - 여기가 질문자님이 원하시던 그 기능입니다.
 # -----------------------------------------------------------------------------
-pg_home = st.Page(page_home, title="Home", icon="🏠", url_path="home")
 
-pg_kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄", url_path="kr_report")
-pg_kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯", url_path="kr_score")
-pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊", url_path="kr_sector")
-pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈", url_path="kr_yield")
-pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍", url_path="kr_screening")
+pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
 
-pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯", url_path="us_score")
-pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊", url_path="us_sector")
-pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈", url_path="us_yield")
-pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍", url_path="us_screening")
+pg_kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
+pg_kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
+pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
+pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
+pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-# -----------------------------------------------------------------------------
-# [3] 네비게이션 숨김 처리 (기능만 활성화)
-# -----------------------------------------------------------------------------
-pg = st.navigation(
-    [pg_home, pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5, pg_us_1, pg_us_2, pg_us_3, pg_us_4],
-    position="hidden"
-)
+pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
+pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
+pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
+pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# -----------------------------------------------------------------------------
-# [4] 커스텀 사이드바 구성 (Page Link + CSS 해킹 조합)
-# -----------------------------------------------------------------------------
-with st.sidebar:
-    # 1. 타이틀
-    st.markdown("""
-    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A; margin-bottom: 1rem; padding-left: 0.2rem; letter-spacing: -0.5px;'>
-    EMS QUANT AI
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # 2. 메인 메뉴
-    st.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
-    
-    # st.page_link는 기능적으로 완벽하며, 위의 CSS로 디자인을 덮어씌웠습니다.
-    st.page_link(pg_home, label="Home", icon="🏠")
-    
-    st.markdown("<div style='margin-top:1rem;'></div>", unsafe_allow_html=True)
+# 네비게이션 그룹핑 (섹션 제목이 자동으로 작게 표시됨)
+pg = st.navigation({
+    "Main": [pg_home],
+    "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
+    "미국장": [pg_us_1, pg_us_2, pg_us_3, pg_us_4]
+})
 
-    # 3. 한국장 (드롭다운)
-    with st.expander("🇰🇷 한국장", expanded=True):
-        st.page_link(pg_kr_1, label="일일 리포트", icon="📄")
-        st.page_link(pg_kr_2, label="EMS스코어", icon="💯")
-        st.page_link(pg_kr_3, label="섹터 모니터링", icon="📊")
-        st.page_link(pg_kr_4, label="섹터별 수익률", icon="📈")
-        st.page_link(pg_kr_5, label="종목 스크리닝", icon="🔍")
-
-    # 4. 미국장 (드롭다운)
-    with st.expander("🇺🇸 미국장", expanded=True):
-        st.page_link(pg_us_1, label="EMS스코어 (US)", icon="💯")
-        st.page_link(pg_us_2, label="섹터 모니터링 (US)", icon="📊")
-        st.page_link(pg_us_3, label="섹터별 수익률 (US)", icon="📈")
-        st.page_link(pg_us_4, label="종목 스크리닝 (US)", icon="🔍")
-
-# -----------------------------------------------------------------------------
-# [5] 앱 실행
-# -----------------------------------------------------------------------------
 pg.run()
+
+# 푸터 (st.navigation 사용 시 사이드바 맨 아래에 붙습니다)
+st.sidebar.markdown("---")
+current_year = datetime.now().year
+st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
