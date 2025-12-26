@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 25 (Syntax Error 수정 완료 - 순정 모드)
-VER = 25
+# [버전 관리] Ver: 26 (Syntax Error 긴급 수정 + Ver 10 디자인 복구)
+VER = 26
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (네비게이션 관련 CSS 없음 - 순정 유지)
+# 2. CSS 스타일링 (Ver 10 기준 - 타이틀을 맨 위로 올리는 필수 코드만 포함)
 st.markdown("""
 <script>
 (function() {
@@ -39,6 +39,59 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
+    /* ----------------------------------------------------------------------
+       [타이틀 위치 고정]
+       Streamlit 순정 네비게이션은 무조건 맨 위에 오려하기 때문에,
+       CSS를 이용해 그 머리 위에 'EMS QUANT AI' 타이틀을 강제로 심어줍니다.
+       (이 코드가 없으면 타이틀이 맨 아래로 떨어집니다)
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebarNav"] {
+        padding-top: 1rem; 
+    }
+    
+    [data-testid="stSidebarNav"]::before {
+        content: "EMS QUANT AI";
+        display: block;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1E3A8A; /* 진한 남색 */
+        letter-spacing: -0.5px;
+        
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        
+        /* 구분선 */
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 25px;
+    }
+
+    /* ----------------------------------------------------------------------
+       [메뉴 텍스트 스타일] - 깔끔하게 (Ongkoo 스타일)
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebarNav"] span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #555;
+    }
+    
+    /* 선택된 메뉴 배경 투명화 */
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: transparent !important;
+        color: #1E3A8A !important;
+    }
+    [data-testid="stSidebarNav"] a[aria-current="page"] span {
+        color: #1E3A8A !important;
+        font-weight: 800 !important;
+    }
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+    }
+
+    /* [중요] 섹션 헤더(한국장, 미국장) 관련 CSS는 건드리지 않습니다. */
+    /* Streamlit 순정 기능으로 표시되도록 놔둡니다. */
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -121,13 +174,14 @@ pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
 pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
 pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-# [오타 수정 완료] 여기가 문제의 구간이었습니다. 따옴표와 괄호를 완벽하게 닫았습니다.
+# [오타 수정 완료] 끊겼던 부분을 완벽하게 복구했습니다.
 pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
 pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [순정 네비게이션 실행]
+# [Native Navigation 실행]
+# 딕셔너리 구조를 사용하므로 '한국장', '미국장' 섹션이 자동으로 생성됩니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -136,18 +190,7 @@ pg = st.navigation({
 
 pg.run()
 
-
-# -----------------------------------------------------------------------------
-# [사이드바 하단 타이틀]
-# 순정 네비게이션 사용 시 메뉴가 맨 위로 가므로, 타이틀은 아래에 배치됩니다.
-# -----------------------------------------------------------------------------
-with st.sidebar:
-    st.divider()
-    st.markdown("""
-    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A;'>
-        EMS QUANT AI
-    </div>
-    """, unsafe_allow_html=True)
-    
-    current_year = datetime.now().year
-    st.markdown(f"<div style='color: #888; font-size: 0.8rem; margin-top: 1rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# 푸터
+st.sidebar.markdown("---")
+current_year = datetime.now().year
+st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
