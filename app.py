@@ -195,7 +195,7 @@ pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
     "미국장": [pg_us_1, pg_us_2, pg_us_3, pg_us_4]
-})
+}, position='sidebar')
 
 pg.run()
 
@@ -203,3 +203,4 @@ pg.run()
 st.sidebar.markdown("---")
 current_year = datetime.now().year
 st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
