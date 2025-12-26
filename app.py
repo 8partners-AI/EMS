@@ -8,8 +8,8 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.3 (스크린샷 참조하여 업데이트)
-VER = "v0.2.3"
+# [버전 관리] v0.2.5 (스크린샷 참조하여 업데이트)
+VER = "v0.2.5"
 
 # [로고 크기 조절]
 LOGO_WIDTH = 150
@@ -28,7 +28,7 @@ st.set_page_config(
 # [로고 이미지 처리]
 # -----------------------------------------------------------------------------
 current_dir = os.path.dirname(os.path.abspath(__file__))
-logo_path = os.path.join(current_dir, "logo1.png")
+logo_path = os.path.join(current_dir, "logo2.png")
 
 if os.path.exists(logo_path):
     try:
@@ -74,7 +74,7 @@ st.markdown(f"""
         letter-spacing: -0.5px;
         
         margin-top: 10px; 
-        margin-bottom: 25px; /* [수정] 60px -> 25px (확 줄임) */
+        margin-bottom: 35px;
     }}
 
     /* ----------------------------------------------------------------------
@@ -132,8 +132,8 @@ def page_home():
 """, unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("한국장 종목 수", "2,847", "↑ 12")
-    col2.metric("미국장 종목 수", "5,234", "↑ 45")
+    col1.metric("국내 증시 종목 수", "2,847", "↑ 12")
+    col2.metric("미국 증시 종목 수", "5,234", "↑ 45")
     col3.metric("오늘 거래량", "1.2조원", "↑ 5.3%")
     col4.metric("시스템 상태", "정상", "✓")
     
@@ -149,7 +149,7 @@ def page_home():
     st.subheader("📊 최근 활동")
     activity_data = pd.DataFrame({
         "시간": pd.date_range(start=datetime.now().date(), periods=5, freq="-1D"),
-        "활동": ["한국장 데이터 업데이트", "미국장 분석 완료", "보고서 생성", "시스템 점검", "데이터 백업"],
+        "활동": ["국내 증시 데이터 업데이트", "미국 증시 분석 완료", "보고서 생성", "시스템 점검", "데이터 백업"],
         "상태": ["완료", "완료", "완료", "완료", "완료"]
     })
     st.dataframe(activity_data, use_container_width=True, hide_index=True)
@@ -186,14 +186,14 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 # 1. 페이지 객체 생성
 home_page = st.Page(page_home, title="Home", icon="🏠", default=True)
 
-# 한국장
+# KOR
 kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
 kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
 kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
 kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
 kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-# 미국장
+# US
 us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
 us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
@@ -202,8 +202,8 @@ us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 # 2. 딕셔너리 구조
 pages = {
     "Main": [home_page],
-    "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
-    "미국장": [us_1, us_2, us_3, us_4]
+    "KOR": [kr_1, kr_2, kr_3, kr_4, kr_5],
+    "US": [us_1, us_2, us_3, us_4]
 }
 
 # 3. 실행
@@ -226,3 +226,4 @@ with st.sidebar:
     
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
