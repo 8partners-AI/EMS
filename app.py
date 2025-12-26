@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 11 (드롭다운 화살표 수직 정렬 보정)
-VER = 11
+# [버전 관리] Ver: 13 (화살표 크기 확대 및 시각적 균형 보정)
+VER = 13
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (여기가 핵심 디자인 파트입니다)
+# 2. CSS 스타일링
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -23,13 +23,13 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더 숨김 (햄버거 메뉴는 유지) */
+    /* 상단 헤더 숨김 (햄버거 메뉴 유지) */
     header {visibility: visible !important; background: transparent !important;}
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 (Ver 10 유지)
+       [1] 타이틀 디자인
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -53,8 +53,10 @@ st.markdown("""
     /* ----------------------------------------------------------------------
        [2] 메뉴 디자인 커스텀
        ---------------------------------------------------------------------- */
-    
-    /* 메뉴 항목 텍스트 스타일 */
+    [data-testid="stSidebar"] {
+        background-color: #FAFAFA;
+    }
+
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
@@ -62,7 +64,6 @@ st.markdown("""
         padding-left: 5px; 
     }
     
-    /* 선택된 메뉴(Active) */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -82,47 +83,62 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [3] 드롭다운(Expander) 화살표 정렬 수정 (여기가 Ver 11 핵심!)
+       [3] ★ 드롭다운(Expander) 화살표 디자인 리셋 ★
        ---------------------------------------------------------------------- */
     
-    /* 드롭다운 테두리 제거 */
+    /* 1. 테두리 제거 */
     [data-testid="stSidebar"] [data-testid="stExpander"] {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
     }
 
-    /* 헤더(제목+화살표) 컨테이너 정렬 보정 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader {
-        display: flex !important;       /* Flexbox 모드 강제 */
-        align-items: center !important; /* 수직 중앙 정렬 (핵심) */
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #666;
-        padding-left: 0.5rem;
-        padding-top: 0.5rem !important;    /* 위아래 여백을 동일하게 */
-        padding-bottom: 0.5rem !important;
-        background-color: transparent !important;
-    }
-
-    /* 헤더 내부의 텍스트(P태그) 마진 제거 */
-    /* 텍스트가 혼자 margin을 가지고 있어서 붕 뜨는 현상 방지 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader p {
+    /* 2. details 태그 */
+    [data-testid="stSidebar"] details {
+        border: none !important;
         margin-bottom: 0 !important;
-        padding-bottom: 0 !important;
-        line-height: 1.0 !important; /* 줄 간격 타이트하게 */
     }
 
-    /* 헤더 내부의 아이콘(SVG) 크기 및 위치 미세 조정 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader svg {
-        margin-top: 0 !important;
-        margin-right: 0.5rem !important; /* 텍스트와의 간격 */
+    /* 3. summary (헤더) 정렬 */
+    [data-testid="stSidebar"] details > summary {
+        display: flex !important;
+        align-items: center !important; /* 수직 중앙 정렬 */
+        padding: 0.5rem 0.5rem !important;
+        list-style: none !important;
+        outline: none !important;
+    }
+
+    /* 4. [핵심 수정] 아이콘(SVG) 크기 확대 및 스타일링 */
+    [data-testid="stSidebar"] details > summary svg {
+        width: 1.1rem !important;  /* [확대] 기존보다 키움 */
+        height: 1.1rem !important; /* [확대] */
+        margin-right: 0.6rem !important; /* 텍스트와 간격 벌림 */
+        color: #555 !important;    /* 색상을 진한 회색으로 */
+        stroke-width: 2.5px !important; /* [굵게] 선을 두껍게 해서 흐릿함 방지 */
+        vertical-align: middle !important;
+        flex-shrink: 0 !important; /* 찌그러짐 방지 */
+    }
+
+    /* 5. 텍스트 스타일 */
+    [data-testid="stSidebar"] details > summary p {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 0.95rem !important; /* 폰트 크기와 아이콘 크기 비율 맞춤 */
+        font-weight: 700 !important;   /* 좀 더 굵게 */
+        color: #4B5563 !important;
+        line-height: 1.0 !important;
     }
 
     /* 호버 효과 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
-        color: #000;
-        background-color: rgba(0,0,0,0.02) !important; /* 살짝 반응 */
+    [data-testid="stSidebar"] details > summary:hover {
+         background-color: rgba(0,0,0,0.02) !important;
+         border-radius: 6px !important;
+    }
+    
+    /* 호버 시 아이콘과 글자 색상 진하게 */
+    [data-testid="stSidebar"] details > summary:hover p,
+    [data-testid="stSidebar"] details > summary:hover svg {
+        color: #000 !important;
     }
 
 </style>
