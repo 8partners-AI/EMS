@@ -190,7 +190,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
             <div>최종 업데이트: {current_time}</div>
-            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'> test789</div>
+            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'> test7ㄸㄸㄸㄴㄹㄴ89</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -287,3 +287,4 @@ elif menu == "🔍 종목 스크리닝 (US)":
 st.markdown("---")
 current_year = datetime.now().year
 st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
