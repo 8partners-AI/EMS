@@ -17,7 +17,7 @@ st.set_page_config(
 
 # -----------------------------------------------------------------------------
 # [로고 이미지 경로 설정 - 절대 경로 방식]
-# GitHub 서버든, 내 컴퓨터든 상관없이 "현재 파일 옆에 있는 logo.png"를 찾습니다.
+# GitHub 서버든, 내 컴퓨터든 상관없이 "현재 파일 옆에 있는 logo1.png"를 찾습니다.
 # -----------------------------------------------------------------------------
 
 # 1. 현재 실행 중인 파일(app.py)의 위치를 찾습니다.
@@ -32,7 +32,7 @@ if os.path.exists(logo_path):
 else:
     # 파일이 아직 GitHub에 안 올라갔거나 이름이 다를 경우 경고
     # (이미지를 업로드하면 이 경고는 사라지고 로고가 뜹니다)
-    st.sidebar.warning("로고 파일을 찾을 수 없습니다. GitHub에 logo.png를 업로드했는지 확인하세요.")
+    st.sidebar.warning("로고 파일을 찾을 수 없습니다. GitHub에 logo1.png를 업로드했는지 확인하세요.")
 
 
 # 2. CSS 스타일링
@@ -197,4 +197,5 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
