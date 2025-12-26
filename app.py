@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 # [버전 관리] Ver: 38 (CSS [3]번 블록 삭제 - 순정 네비게이션 복구 완료)
-VER = 38
+VER = 39
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -13,95 +13,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# 2. CSS 스타일링
-st.markdown("""
-<style>
-    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
-    
-    html, body, [class*="css"] {
-        font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-    }
-
-    /* 상단 헤더, 푸터 숨김 */
-    header {visibility: visible !important; background: transparent !important;}
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    
-    /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 (유지)
-       네비게이션 상단에 'EMS QUANT AI' 제목을 넣습니다.
-       ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
-    }
-    
-    [data-testid="stSidebarNav"]::before {
-        content: "EMS QUANT AI";
-        display: block;
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
-        letter-spacing: -0.5px;
-        
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 10px;
-        
-        padding-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
-    }
-
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 텍스트 스타일 (유지 - Ongkoo 스타일)
-       버튼 배경을 투명하게 하고 글자색을 다듬습니다.
-       ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-        padding-left: 5px;
-    }
-    
-    /* 선택된 메뉴 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    /* 호버 효과 */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    /* 기본 섹션 구분선 숨김 */
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-    
-    /* 섹션 헤더 (한국장, 미국장) 텍스트 스타일 */
-    div[data-testid="stSidebarNav"] > div > div > span {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #999;
-        padding-left: 15px;
-        margin-top: 15px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-    }
-
-    /* [삭제됨] [3]번 드롭다운/화살표 관련 CSS를 싹 지웠습니다. 
-       이제 Streamlit 순정 기능이 작동하여 화살표가 완벽하게 나옵니다. */
-
-</style>
-""", unsafe_allow_html=True)
-
 
 # -----------------------------------------------------------------------------
 # [페이지 함수 정의]
@@ -207,3 +118,4 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
