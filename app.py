@@ -55,11 +55,15 @@ st.markdown("""
         padding: 0.5rem 0 !important;
         margin-bottom: 0.5rem !important;
         cursor: pointer !important;
+        visibility: visible !important;
+        display: block !important;
     }
     
     .streamlit-expanderContent {
         padding: 0 !important;
         margin-top: 0 !important;
+        visibility: visible !important;
+        display: block !important;
     }
     
     /* Expander 내부 버튼 스타일 */
@@ -67,6 +71,14 @@ st.markdown("""
         margin-left: 0;
         padding-left: 0.75rem;
         font-size: 0.875rem;
+        visibility: visible !important;
+        display: block !important;
+    }
+    
+    /* Expander 전체 보이기 보장 */
+    [data-testid="stExpander"] {
+        visibility: visible !important;
+        display: block !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -93,7 +105,8 @@ if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", typ
     st.rerun()
 
 # 한국장 섹션 (드롭다운)
-kr_expander = st.sidebar.expander("### 한국장", expanded=st.session_state.kr_expanded)
+st.sidebar.markdown("### 한국장")
+kr_expander = st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded)
 with kr_expander:
     kr_menu_items = [
         ("📄 일일 리포트", "📄 일일 리포트"),
@@ -104,13 +117,14 @@ with kr_expander:
     ]
     
     for idx, (label, page) in enumerate(kr_menu_items):
-        if st.button(label, use_container_width=True, key=f"kr_btn_{idx}_{page}",
+        if st.button(label, use_container_width=True, key=f"kr_btn_{idx}_{page.replace(' ', '_')}",
                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
 
 # 미국장 섹션 (드롭다운)
-us_expander = st.sidebar.expander("### 미국장", expanded=st.session_state.us_expanded)
+st.sidebar.markdown("### 미국장")
+us_expander = st.sidebar.expander("미국장", expanded=st.session_state.us_expanded)
 with us_expander:
     us_menu_items = [
         ("💯 EMS스코어", "💯 EMS스코어 (US)"),
@@ -120,7 +134,8 @@ with us_expander:
     ]
     
     for idx, (label, page) in enumerate(us_menu_items):
-        if st.button(label, use_container_width=True, key=f"us_btn_{idx}_{page}",
+        clean_page = page.replace(' ', '_').replace('(', '').replace(')', '').replace('US', 'US')
+        if st.button(label, use_container_width=True, key=f"us_btn_{idx}_{clean_page}",
                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
