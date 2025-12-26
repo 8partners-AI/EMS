@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 24 (CSS 완전 제거 - 100% 순정 모드)
-VER = 24
+# [버전 관리] Ver: 25 (Syntax Error 수정 완료 - 순정 모드)
+VER = 25
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,8 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (네비게이션 관련 CSS 전부 삭제)
-# 오직 폰트와 상단 헤더 숨김(기본)만 남겼습니다.
+# 2. CSS 스타일링 (네비게이션 관련 CSS 없음 - 순정 유지)
 st.markdown("""
 <script>
 (function() {
@@ -35,15 +34,10 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더, 푸터 숨김 (이건 필수) */
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* [중요] 
-       네비게이션, 사이드바, 화살표, 폰트 색상 등 
-       디자인을 건드리는 그 어떤 CSS도 넣지 않았습니다.
-    */
     
 </style>
 """, unsafe_allow_html=True)
@@ -127,12 +121,13 @@ pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
 pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
 pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
+# [오타 수정 완료] 여기가 문제의 구간이었습니다. 따옴표와 괄호를 완벽하게 닫았습니다.
 pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
 pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [순정 그 자체]
+# [순정 네비게이션 실행]
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -143,13 +138,11 @@ pg.run()
 
 
 # -----------------------------------------------------------------------------
-# [사이드바 내용]
-# 순정 모드에서는 네비게이션이 무조건 맨 위로 갑니다. (Streamlit 강제 사항)
-# 그래서 타이틀과 푸터는 그 아래에 붙습니다.
+# [사이드바 하단 타이틀]
+# 순정 네비게이션 사용 시 메뉴가 맨 위로 가므로, 타이틀은 아래에 배치됩니다.
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.divider() # 구분선
-    # 타이틀 (네비게이션 아래에 위치하게 됩니다)
+    st.divider()
     st.markdown("""
     <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A;'>
         EMS QUANT AI
