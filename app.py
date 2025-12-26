@@ -40,6 +40,34 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* 사이드바 보이기 보장 */
+    [data-testid="stSidebar"] {
+        visibility: visible !important;
+        display: block !important;
+    }
+    
+    /* Expander 스타일 개선 */
+    .streamlit-expanderHeader {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        color: #262730 !important;
+        padding: 0.5rem 0 !important;
+        margin-bottom: 0.5rem !important;
+        cursor: pointer !important;
+    }
+    
+    .streamlit-expanderContent {
+        padding: 0 !important;
+        margin-top: 0 !important;
+    }
+    
+    /* Expander 내부 버튼 스타일 */
+    .streamlit-expanderContent .stButton > button {
+        margin-left: 0;
+        padding-left: 0.75rem;
+        font-size: 0.875rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -53,6 +81,10 @@ EMS QUANT AI
 # 세션 상태 초기화
 if 'selected_page' not in st.session_state:
     st.session_state.selected_page = "🏠 Home"
+if 'kr_expanded' not in st.session_state:
+    st.session_state.kr_expanded = True
+if 'us_expanded' not in st.session_state:
+    st.session_state.us_expanded = True
 
 # 메인 메뉴
 st.sidebar.markdown("### 메인 메뉴")
@@ -60,36 +92,38 @@ if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", typ
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
-# 한국장 섹션
-st.sidebar.markdown("### 한국장")
-kr_menu_items = [
-    ("📄 일일 리포트", "📄 일일 리포트"),
-    ("💯 EMS스코어", "💯 EMS스코어"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
-]
+# 한국장 섹션 (드롭다운)
+kr_expander = st.sidebar.expander("### 한국장", expanded=st.session_state.kr_expanded)
+with kr_expander:
+    kr_menu_items = [
+        ("📄 일일 리포트", "📄 일일 리포트"),
+        ("💯 EMS스코어", "💯 EMS스코어"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
+    ]
+    
+    for idx, (label, page) in enumerate(kr_menu_items):
+        if st.button(label, use_container_width=True, key=f"kr_btn_{idx}_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
-for label, page in kr_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"kr_{page}",
-                type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
-
-# 미국장 섹션
-st.sidebar.markdown("### 미국장")
-us_menu_items = [
-    ("💯 EMS스코어", "💯 EMS스코어 (US)"),
-    ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
-    ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
-    ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
-]
-
-for label, page in us_menu_items:
-    if st.sidebar.button(label, use_container_width=True, key=f"us_{page}",
-                type="primary" if st.session_state.selected_page == page else "secondary"):
-        st.session_state.selected_page = page
-        st.rerun()
+# 미국장 섹션 (드롭다운)
+us_expander = st.sidebar.expander("### 미국장", expanded=st.session_state.us_expanded)
+with us_expander:
+    us_menu_items = [
+        ("💯 EMS스코어", "💯 EMS스코어 (US)"),
+        ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
+        ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
+        ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
+    ]
+    
+    for idx, (label, page) in enumerate(us_menu_items):
+        if st.button(label, use_container_width=True, key=f"us_btn_{idx}_{page}",
+                    type="primary" if st.session_state.selected_page == page else "secondary"):
+            st.session_state.selected_page = page
+            st.rerun()
 
 menu = st.session_state.selected_page
 
@@ -105,7 +139,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test3</div>
+            <div style='margin-top: 0.25rem;'>test6</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -332,11 +366,12 @@ elif menu == "🔍 종목 스크리닝 (US)":
     st.dataframe(us_stocks, use_container_width=True, hide_index=True)
 
 # 푸터
+current_year = datetime.now().year
 st.markdown("---")
 st.markdown(
-    """
+    f"""
     <div style='text-align: center; color: gray; padding: 2rem 0;'>
-        <p>© 2024 EMS QUANT AI. All rights reserved.</p>
+        <p>© {current_year} EMS QUANT AI. All rights reserved.</p>
     </div>
     """,
     unsafe_allow_html=True
