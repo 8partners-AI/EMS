@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 # [버전 관리] Ver: 10 (타이틀 구분선 추가 & 간격 조정)
-VER = 111111111111111
+VER = 10
 
 # HTTP → HTTPS 자동 리다이렉트 (8partners.co.kr 도메인 최적화)
 st.markdown("""
@@ -117,11 +117,13 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [3] 드롭다운 화살표 개선 (핵심 수정 부분)
+       [3] 드롭다운 화살표 개선 (모든 가능한 선택자 포함)
        ---------------------------------------------------------------------- */
     
-    /* 드롭다운 버튼 (섹션 헤더 버튼) 스타일 */
-    [data-testid="stSidebarNav"] button[aria-expanded] {
+    /* 모든 드롭다운 버튼 스타일 (포괄적 선택) */
+    [data-testid="stSidebarNav"] button,
+    [data-testid="stSidebarNav"] button[aria-expanded],
+    [data-testid="stSidebarNav"] [role="button"] {
         width: 100% !important;
         padding: 10px 15px !important;
         font-size: 0.85rem !important;
@@ -137,36 +139,55 @@ st.markdown("""
     }
     
     /* 드롭다운 버튼 호버 효과 */
+    [data-testid="stSidebarNav"] button:hover,
     [data-testid="stSidebarNav"] button[aria-expanded]:hover {
         background-color: rgba(0,0,0,0.03) !important;
         color: #1E3A8A !important;
     }
     
-    /* 드롭다운 화살표 아이콘 크기 및 스타일 개선 */
+    /* 모든 SVG 아이콘 (화살표) 크기 및 스타일 개선 - 매우 포괄적 */
+    [data-testid="stSidebarNav"] svg,
+    [data-testid="stSidebarNav"] button svg,
     [data-testid="stSidebarNav"] button[aria-expanded] svg,
-    [data-testid="stSidebarNav"] button svg {
-        width: 18px !important;
-        height: 18px !important;
-        min-width: 18px !important;
-        min-height: 18px !important;
+    [data-testid="stSidebarNav"] [role="button"] svg,
+    [data-testid="stSidebarNav"] * svg {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
         flex-shrink: 0 !important;
         margin-left: 8px !important;
         color: #666 !important;
         fill: #666 !important;
-        transition: transform 0.2s ease !important;
+        stroke: #666 !important;
+        transition: transform 0.2s ease, color 0.2s ease, fill 0.2s ease !important;
     }
     
-    /* 드롭다운이 열렸을 때 화살표 회전 */
-    [data-testid="stSidebarNav"] button[aria-expanded="true"] svg {
+    /* 드롭다운이 열렸을 때 화살표 회전 (모든 경우) */
+    [data-testid="stSidebarNav"] button[aria-expanded="true"] svg,
+    [data-testid="stSidebarNav"] [aria-expanded="true"] svg {
         transform: rotate(180deg) !important;
         color: #1E3A8A !important;
         fill: #1E3A8A !important;
+        stroke: #1E3A8A !important;
     }
     
     /* 드롭다운 버튼 호버 시 화살표 색상 변경 */
+    [data-testid="stSidebarNav"] button:hover svg,
     [data-testid="stSidebarNav"] button[aria-expanded]:hover svg {
         color: #1E3A8A !important;
         fill: #1E3A8A !important;
+        stroke: #1E3A8A !important;
+    }
+    
+    /* Material Icons나 다른 아이콘 시스템 대응 */
+    [data-testid="stSidebarNav"] .material-icons,
+    [data-testid="stSidebarNav"] [class*="icon"],
+    [data-testid="stSidebarNav"] [class*="Icon"] {
+        font-size: 20px !important;
+        width: 20px !important;
+        height: 20px !important;
+        line-height: 20px !important;
     }
 
 </style>
