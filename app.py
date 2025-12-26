@@ -8,8 +8,8 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.6 (스크린샷 참조하여 업데이트)
-VER = "v0.2.6"
+# [버전 관리] v0.2.5 (화살표 자동화 및 메뉴명 영문 변경)
+VER = "v0.2.5"
 
 # [로고 크기 조절]
 LOGO_WIDTH = 150
@@ -28,7 +28,8 @@ st.set_page_config(
 # [로고 이미지 처리]
 # -----------------------------------------------------------------------------
 current_dir = os.path.dirname(os.path.abspath(__file__))
-logo_path = os.path.join(current_dir, "logo2.png")
+# [수정됨] 요청하신 logo2.png로 변경
+logo_path = os.path.join(current_dir, "logo2.png") 
 
 if os.path.exists(logo_path):
     try:
@@ -57,7 +58,6 @@ st.markdown(f"""
     
     /* ----------------------------------------------------------------------
        [1] 메인 타이틀 (EMS QUANT AI)
-       * 마진을 대폭 줄여서 버전 뱃지를 위로 끌어올릴 공간을 만듭니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 0rem; 
@@ -79,17 +79,16 @@ st.markdown(f"""
 
     /* ----------------------------------------------------------------------
        [2] 메뉴 컨테이너 (ul) + [상단 회색 구분선]
-       * 아래쪽 푸터 선과 색상 코드(#e0e0e0)와 두께(1px)를 완벽히 맞췄습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul {{
-        border-top: 1px solid #g0g0g0; /* [중요] 아래쪽 선과 동일한 스펙 */
+        /* [수정됨] #g0g0g0(오타) -> #e0e0e0 (유효한 밝은 회색, 아래쪽 선과 통일) */
+        border-top: 1px solid #e0e0e0; 
         padding-top: 20px;             
         position: relative;            
     }}
 
     /* ----------------------------------------------------------------------
        [3] 버전 뱃지 ({VER}) 
-       * 타이틀 바로 밑에 찰싹 붙도록 위치를 조정했습니다.
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
@@ -101,7 +100,7 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.7); 
         color: #46B1E1;                             
         
-        padding: 2px 8px;    /* 패딩을 살짝 줄여서 더 날렵하게 */     
+        padding: 2px 8px;    
         border-radius: 6px;   
         
         font-size: 0.8rem;
@@ -132,10 +131,17 @@ def page_home():
 """, unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("국내 증시 종목 수", "2,847", "↑ 12")
-    col2.metric("미국 증시 종목 수", "5,234", "↑ 45")
-    col3.metric("오늘 거래량", "1.2조원", "↑ 5.3%")
-    col4.metric("시스템 상태", "정상", "✓")
+    
+    # [수정됨] "↑ 12" -> "12"
+    # 문자열에 화살표를 넣지 않아도, 양수면 Streamlit이 자동으로 초록색 화살표를 붙여줍니다.
+    col1.metric("국내 증시 종목 수", "2,847", "12") 
+    col2.metric("미국 증시 종목 수", "5,234", "45")
+    col3.metric("오늘 거래량", "1.2조원", "5.3%")
+    
+    # "↑✓" 같은 특수기호는 자동생성이 안 되므로, 이런 경우엔 직접 넣는 게 맞습니다.
+    # 하지만 보통은 "정상" 상태라면 delta를 안 쓰거나, 그냥 색상만 입히기도 합니다.
+    # 여기서는 유지하겠습니다.
+    col4.metric("시스템 상태", "정상", "✓") 
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
@@ -212,8 +218,6 @@ pg.run()
 
 # -----------------------------------------------------------------------------
 # [하단 푸터 - 회색 선 통일]
-# 기존의 st.markdown("---") 대신, 상단 선과 똑같은 CSS를 가진 HTML Div를 사용합니다.
-# 이렇게 해야 위아래 선이 쌍둥이처럼 똑같아집니다.
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown("""
@@ -226,5 +230,3 @@ with st.sidebar:
     
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
-
