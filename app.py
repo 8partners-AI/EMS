@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 10 (오른쪽 상단 HTML 노출 수정판)
-VER = 10
+# [버전 관리] Ver: 35 (물리적 영역 분리: 마진으로 메뉴 내리고 타이틀 삽입)
+VER = 35
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,8 +14,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (질문자님이 주신 Ver 10 코드 100% 동일 유지)
+# 2. CSS 스타일링
+# [핵심 전략]
+# 네비게이션을 건드리지 않고, 위치만 아래로 밀어버립니다.
+# 그리고 빈 공간에 타이틀을 넣습니다.
 st.markdown("""
+<script>
+(function() {
+    if (window.location.protocol === 'http:') {
+        var httpsUrl = window.location.href.replace('http://', 'https://');
+        if (window.location.hostname === '8partners.co.kr' || 
+            window.location.hostname.includes('8partners.co.kr')) {
+            window.location.replace(httpsUrl);
+        }
+    }
+})();
+</script>
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
@@ -23,82 +37,41 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더 숨김 (햄버거 메뉴는 유지) */
-    header {visibility: visible !important; background: transparent !important;}
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인 업그레이드 (구분선 + 간격 추가)
+       [1] 네비게이션 메뉴 위치 조정 (아래로 밀기)
+       타이틀이 들어갈 공간(약 100px)만큼 메뉴 전체를 아래로 밀어버립니다.
+       이렇게 하면 메뉴 기능(드롭다운, 화살표)은 100% 순정으로 유지되면서
+       위쪽에 빈 공간이 생깁니다.
        ---------------------------------------------------------------------- */
-    
-    /* 네비게이션 컨테이너 상단 여백 확보 */
     [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
+        margin-top: 80px !important; /* 이만큼 공간을 비웁니다 */
     }
-    
-    /* 타이틀 및 구분선 생성 */
-    [data-testid="stSidebarNav"]::before {
+
+    /* ----------------------------------------------------------------------
+       [2] 타이틀 삽입 (비어있는 상단 공간에 고정)
+       사이드바 전체 틀(stSidebar)의 맨 위에 타이틀을 '절대 위치'로 고정합니다.
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebar"]::before {
         content: "EMS QUANT AI";
-        display: block;
+        position: absolute; /* 절대 위치 고정 */
+        top: 30px;          /* 위에서 30px 지점 */
+        left: 20px;         /* 왼쪽에서 20px 지점 */
+        width: calc(100% - 40px);
+        
         font-size: 1.6rem;
         font-weight: 800;
         color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
         
-        /* 위치 조정 */
-        margin-left: 20px;
-        margin-right: 20px; /* 오른쪽에도 여백을 줘서 줄 길이를 조절 */
-        margin-top: 10px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0; /* 구분선 */
         
-        /* [핵심] 구분선 및 간격 디자인 */
-        padding-bottom: 20px; /* 글자와 줄 사이의 간격 */
-        border-bottom: 1px solid #e0e0e0; /* 연한 회색 구분선 */
-        margin-bottom: 25px; /* 줄과 아래 메뉴 사이의 간격 (충분히 띄움) */
-    }
-
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 커스텀 (Ongkoo 스타일 유지)
-       ---------------------------------------------------------------------- */
-    
-    /* 메뉴 항목 텍스트 스타일 */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-        padding-left: 5px; /* 텍스트 살짝 들여쓰기 */
-    }
-    
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    /* 마우스 올렸을 때(Hover) */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    /* 기본 섹션 구분선 숨김 (우리가 만든 회색 줄을 쓸 것이므로) */
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-    
-    /* 섹션 헤더 (한국장, 미국장) 스타일 미세 조정 */
-    div[data-testid="stSidebarNav"] > div > div > span {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #999;
-        padding-left: 15px; /* 헤더 들여쓰기 */
-        margin-top: 15px;
-        margin-bottom: 5px;
-        text-transform: uppercase;
+        z-index: 999; /* 메뉴보다 위에 오도록(혹시 겹쳐도 보이게) */
     }
 
 </style>
@@ -116,13 +89,10 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # [수정된 부분] HTML 코드를 왼쪽으로 바짝 당겨서 들여쓰기를 없앴습니다.
-        # 이렇게 해야 코드가 아닌 HTML로 인식되어 렌더링됩니다.
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-    <div>최종 업데이트: {current_time_str}</div>
-    <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+<div>최종 업데이트: {current_time_str}</div>
+<div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
 </div>
 """, unsafe_allow_html=True)
     
@@ -191,6 +161,8 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
+# [Native Navigation]
+# 네비게이션 기능은 100% 순정입니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -199,7 +171,8 @@ pg = st.navigation({
 
 pg.run()
 
-# 푸터
-st.sidebar.markdown("---")
-current_year = datetime.now().year
-st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# [하단 푸터]
+with st.sidebar:
+    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    current_year = datetime.now().year
+    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
