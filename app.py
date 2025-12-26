@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 18 (Ver 10 구조 복구 + 화살표 정렬 CSS 이식)
-VER = 18
+# [버전 관리] Ver: 19 (Native Navigation 활성화 + CSS 디자인 결합)
+VER = 19
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (Ver 10 베이스 + 화살표 수정)
+# 2. CSS 스타일링 (Native Navigation을 위한 전용 슈트)
 st.markdown("""
 <script>
 (function() {
@@ -39,11 +39,17 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
+    /* 사이드바 배경 */
+    [data-testid="stSidebar"] {
+        background-color: #FAFAFA;
+    }
+
     /* ----------------------------------------------------------------------
-       [1] 타이틀 및 구분선 (Ver 10 코드 그대로 유지)
+       [1] 타이틀 및 구분선 (Native Navigation 상단에 강제 삽입)
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
+        background-color: transparent;
     }
     
     [data-testid="stSidebarNav"]::before {
@@ -54,89 +60,98 @@ st.markdown("""
         color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
         
-        /* 위치 조정 */
+        /* 위치 및 간격 */
         margin-left: 20px;
-        margin-right: 20px;
         margin-top: 10px;
         
-        /* 구분선 및 간격 디자인 */
+        /* 구분선 디자인 */
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
+        margin-right: 20px;
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 텍스트 및 기본 디자인 (Ver 10 코드 유지)
+       [2] 메뉴 아이템 디자인 (버튼 박스 제거 -> 텍스트화)
        ---------------------------------------------------------------------- */
+    
+    /* 기본 링크 스타일 */
+    [data-testid="stSidebarNav"] a {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #555 !important;
+        padding-left: 10px !important;
+    }
+    
+    /* 링크 텍스트 폰트 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
-        padding-left: 5px;
     }
-    
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
+
+    /* 선택된 메뉴 (Active) */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
+        background-color: transparent !important; /* 배경 투명 */
         color: #1E3A8A !important;
     }
-    
     [data-testid="stSidebarNav"] a[aria-current="page"] span {
         color: #1E3A8A !important;
         font-weight: 800 !important;
     }
 
+    /* 마우스 오버 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* 기본 섹션 구분선 숨김 */
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-
     /* ----------------------------------------------------------------------
-       [3] ★ 화살표 디자인 보정 (여기에 Ver 14의 CSS 기술 적용) ★
-       Native Navigation의 그룹 헤더(details > summary)를 타격합니다.
+       [3] 드롭다운(섹션 헤더) 디자인 & 화살표 교정
+       Native Navigation은 details > summary 태그를 사용합니다.
        ---------------------------------------------------------------------- */
-       
-    /* 그룹 헤더(Summary)를 Flexbox로 정렬 */
+    
+    /* 섹션 헤더 정렬 및 스타일 */
     [data-testid="stSidebarNav"] details > summary {
+        background-color: transparent !important;
         display: flex !important;
         align-items: center !important; /* 수직 중앙 정렬 */
-        padding-left: 10px !important;  /* 여백 조정 */
         padding-top: 10px !important;
         padding-bottom: 10px !important;
+        padding-left: 5px !important;
         cursor: pointer;
+        list-style: none !important;
+        outline: none !important;
     }
 
-    /* 화살표 아이콘(SVG) 강제 성형 */
+    /* 화살표 아이콘(SVG) 크기 키우고 위치 잡기 */
     [data-testid="stSidebarNav"] details > summary svg {
-        transform: scale(1.2) translateY(1px) !important; /* 크기 키우고 위치 보정 */
-        margin-right: 0.5rem !important;
+        transform: scale(1.2) translateY(1px) !important; /* 크기 확대 + 위치 보정 */
+        margin-right: 8px !important;
         color: #666 !important;
         stroke-width: 2px !important;
         vertical-align: middle !important;
     }
 
-    /* 그룹 헤더 텍스트 스타일 */
+    /* 섹션 제목 텍스트 (한국장, 미국장) */
     [data-testid="stSidebarNav"] details > summary span {
         font-size: 0.85rem !important;
         font-weight: 600 !important;
-        color: #999 !important;
+        color: #888 !important;
         text-transform: uppercase !important;
-        padding-left: 0 !important; /* 기존 패딩 초기화 */
+        padding-left: 0 !important;
         margin: 0 !important;
+        display: inline-block !important;
     }
 
     /* 호버 효과 */
     [data-testid="stSidebarNav"] details > summary:hover {
-        background-color: rgba(0,0,0,0.02);
+        background-color: rgba(0,0,0,0.02) !important;
         border-radius: 5px;
     }
     [data-testid="stSidebarNav"] details > summary:hover span,
     [data-testid="stSidebarNav"] details > summary:hover svg {
-        color: #333 !important; /* 진한 색으로 변경 */
+        color: #333 !important;
     }
 
 </style>
@@ -144,7 +159,7 @@ st.markdown("""
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용 정의] (Ver 10과 동일)
+# [페이지 내용 정의]
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -169,7 +184,6 @@ def page_home():
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
-    # switch_page 사용 (Navigation 구조에 맞춤)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
@@ -211,8 +225,10 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - Ver 10의 핵심 구조
+# [st.navigation 설정 (Visible)]
 # -----------------------------------------------------------------------------
+# 여기에 딕셔너리 구조를 넣으면 Streamlit이 알아서 드롭다운(Section)을 만듭니다.
+# position="hidden"을 뺐으므로 화면에 정상적으로 나옵니다.
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
 
@@ -227,6 +243,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
+# [딕셔너리 구조] -> 이것이 드롭다운을 만드는 핵심입니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
