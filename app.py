@@ -4,8 +4,8 @@ import numpy as np
 from datetime import datetime, timedelta
 import os 
 
-# [버전 관리] v0.2.0
-VER = "v0.2.0"
+# [버전 관리] v0.2.1
+VER = "v0.2.1"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -197,5 +197,6 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+
 
 
