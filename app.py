@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] 심플하게 버전만 적으세요
+# [버전 관리] v0.0.1
 VER = "v0.0.1"
 
 # 1. 페이지 설정
@@ -29,7 +29,7 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     
     /* ----------------------------------------------------------------------
-       [1] 메인 타이틀 (EMS QUANT AI)
+       [1] 메인 타이틀 (EMS QUANT AI) - 중앙 정렬
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 1rem; 
@@ -38,40 +38,38 @@ st.markdown(f"""
     [data-testid="stSidebarNav"]::before {{
         content: "EMS QUANT AI";
         display: block;
+        text-align: center; /* 가운데 정렬 */
+        
         font-size: 1.6rem;
         font-weight: 800;
         color: #1E3A8A; /* 진한 남색 */
         letter-spacing: -0.5px;
         
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 10px;
-        margin-bottom: 10px; /* 타이틀과 버전 사이 간격 좁힘 */
+        margin-top: 20px;
+        margin-bottom: 5px;
     }}
 
     /* ----------------------------------------------------------------------
-       [2] 버전 뱃지 ({VER}) - 요청하신 심플한 회색 배경 스타일
+       [2] 버전 뱃지 ({VER}) - 중앙 정렬 & 알약 스타일
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
-        content: "{VER}"; 
+        content: "{VER}";
+        display: table;      
+        margin: 0 auto;      /* 가운데 정렬 */
         
         /* 뱃지 디자인 */
         background-color: #F0F2F6; /* 옅은 회색 배경 */
-        color: #555;               /* 진한 회색 글자 */
-        padding: 4px 8px;          /* 안쪽 여백 */
-        border-radius: 6px;        /* 둥근 모서리 */
+        color: #2E7D32;            /* 녹색 글자 */
         
-        /* 폰트 설정 */
-        font-size: 0.75rem;
-        font-weight: 600;
+        padding: 4px 10px;         
+        border-radius: 12px;       
         
-        /* 위치 잡기 */
-        display: inline-block;
-        margin-left: 20px;
-        margin-bottom: 25px;       /* 메뉴와의 간격 */
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        
+        margin-bottom: 25px;       
     }}
-
-    /* 네비게이션 기능(화살표, 드롭다운) 간섭 CSS 없음 (순정 유지) */
 
 </style>
 """, unsafe_allow_html=True)
@@ -88,11 +86,11 @@ def page_home():
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        # HTML 코드 들여쓰기 제거 (노출 방지)
+        
+        # [수정 완료] 버전 정보 삭제 -> '최종 업데이트'만 깔끔하게 표시
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-<div>최종 업데이트: {current_time_str}</div>
-<div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
+    <div>최종 업데이트: {current_time_str}</div>
 </div>
 """, unsafe_allow_html=True)
     
@@ -164,7 +162,7 @@ us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# 2. 딕셔너리 구조 (순정)
+# 2. 딕셔너리 구조 (드롭다운 자동 생성)
 pages = {
     "Main": [home_page],
     "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
