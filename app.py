@@ -2,13 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-import os
-import sys
 
-# [버전 관리] 1 -> 2 업데이트
-VER = 2
+# [버전 관리] 2 -> 3 업데이트 (Native Navigation 적용)
+VER = 3
 
-# 1. 페이지 설정 (최상단 필수)
+# 1. 페이지 설정 (최상단)
 st.set_page_config(
     page_title="EMS QUANT AI",
     page_icon="📊",
@@ -31,179 +29,39 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-# 3. [핵심] CSS 스타일링: 정렬 문제 및 색상 제거 완벽 해결
+# 3. CSS 스타일링 (네비게이션은 Native를 쓰므로, 버튼 CSS는 다 버리고 폰트만 잡습니다)
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
-    /* 전체 폰트 적용 */
     html, body, [class*="css"] {
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
-
-    /* ----------------------------------------------------------------------
-       [사이드바 디자인 - 강제 왼쪽 정렬 및 스타일 리셋]
-       ---------------------------------------------------------------------- */
     
-    /* 사이드바 배경 */
-    [data-testid="stSidebar"] {
-        background-color: #FAFAFA;
-    }
-
-    /* [중요] 버튼 내부의 모든 요소까지 강제로 왼쪽 정렬시키는 코드 */
-    /* Streamlit 버튼은 내부에 div와 p태그가 있어서 겉만 정렬하면 안됩니다. */
-    [data-testid="stSidebar"] .stButton button {
-        width: 100%;
-        border: none !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
-        color: #4B5563 !important;
-        
-        /* Flexbox 강제 왼쪽 정렬 */
-        display: flex !important;
-        justify-content: flex-start !important;
-        align-items: center !important;
-        text-align: left !important;
-        
-        padding: 0.3rem 0.5rem !important;
-        margin: 0 !important;
-        font-size: 0.9rem !important;
-        font-weight: 400 !important;
-    }
-
-    /* 버튼 내부 텍스트 컨테이너(div/p)까지 왼쪽으로 밀어버림 */
-    [data-testid="stSidebar"] .stButton button div,
-    [data-testid="stSidebar"] .stButton button p {
-        text-align: left !important;
-        margin-left: 0 !important;
-        padding-left: 0 !important;
-        display: block !important;
-    }
-
-    /* 마우스 올렸을 때 (Hover) */
-    [data-testid="stSidebar"] .stButton button:hover {
-        background-color: rgba(0,0,0,0.05) !important;
-        color: #000 !important;
-        font-weight: 600 !important;
-    }
-
-    /* [선택된 메뉴 스타일] - Home 버튼 제외 */
-    /* Home 버튼은 아래에서 별도 클래스나 로직으로 색상을 뺄 것이므로, 
-       여기서는 'Primary' 타입인 버튼(다른 메뉴들)만 꾸밉니다. */
-    [data-testid="stSidebar"] .stButton button[kind="primary"] {
-        background-color: #EFF6FF !important; 
-        color: #1E3A8A !important; 
-        font-weight: 700 !important;
-        border-left: 3px solid #1E3A8A !important;
-        border-radius: 0 4px 4px 0 !important;
-    }
-
-    /* [수정 요청 사항] Home 버튼 전용 스타일 해킹 */
-    /* Home 버튼은 키값(key="menu_home")을 통해 CSS로 특정하여 색상을 강제 제거합니다. */
-    div[data-testid="stVerticalBlock"] div:has(> .stButton > button[kind="secondary"]) {
-       /* Secondary 버튼 영역 보정 */
-    }
-
-    /* 드롭다운(Expander) 스타일 리셋 */
-    [data-testid="stSidebar"] [data-testid="stExpander"] {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stExpander"] > details {
-        border: none !important;
-    }
-    [data-testid="stSidebar"] .streamlit-expanderHeader {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #555;
-        padding: 0.5rem 0 0.5rem 0.5rem; 
-        background-color: transparent !important;
-    }
-    [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
-        color: #000;
-    }
-
-    /* 상단 헤더 숨김 */
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-
+    header {visibility: hidden;}
+    
+    /* 사이드바 상단 여백 조정 (제목을 위해) */
+    [data-testid="stSidebarContent"] {
+        padding-top: 2rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 사이드바 헤더 ---
-st.sidebar.markdown("""
-<div style='font-size: 1.4rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem; padding-left: 0.5rem; letter-spacing: -0.5px;'>
-EMS QUANT AI
-</div>
-""", unsafe_allow_html=True)
+# -----------------------------------------------------------------------------
+# [핵심] 각 페이지의 내용을 함수로 정의합니다.
+# -----------------------------------------------------------------------------
 
-# 세션 상태 초기화
-if 'selected_page' not in st.session_state:
-    st.session_state.selected_page = "🏠 Home"
-
-# --- 메뉴 구성 로직 ---
-
-# 1. 메인 메뉴 (Home)
-st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
-
-# [수정 2] Home 버튼: type="secondary"로 고정하여 파란색 박스 제거
-# 선택되더라도 색상이 변하지 않기를 원하셨으므로 항상 'secondary' (기본값) 사용
-if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True, type="secondary"):
-    st.session_state.selected_page = "🏠 Home"
-    st.rerun()
-
-st.sidebar.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
-
-# 2. 한국장 (Expander)
-with st.sidebar.expander("🇰🇷 한국장", expanded=True):
-    kr_menu = {
-        "📄 일일 리포트": "📄 일일 리포트",
-        "💯 EMS스코어": "💯 EMS스코어",
-        "📊 섹터 모니터링": "📊 섹터 모니터링",
-        "📈 섹터별 수익률": "📈 섹터별 수익률",
-        "🔍 종목 스크리닝": "🔍 종목 스크리닝"
-    }
-    
-    for label, page_name in kr_menu.items():
-        # 선택된 메뉴만 'primary' 스타일(연한 파랑 배경) 적용
-        btn_type = "primary" if st.session_state.selected_page == page_name else "secondary"
-        if st.button(label, key=f"kr_{label}", use_container_width=True, type=btn_type):
-            st.session_state.selected_page = page_name
-            st.rerun()
-
-st.sidebar.markdown("<div style='margin-top:0.5rem;'></div>", unsafe_allow_html=True)
-
-# 3. 미국장 (Expander)
-with st.sidebar.expander("🇺🇸 미국장", expanded=True):
-    us_menu = {
-        "💯 EMS스코어 (US)": "💯 EMS스코어 (US)",
-        "📊 섹터 모니터링 (US)": "📊 섹터 모니터링 (US)",
-        "📈 섹터별 수익률 (US)": "📈 섹터별 수익률 (US)",
-        "🔍 종목 스크리닝 (US)": "🔍 종목 스크리닝 (US)"
-    }
-    
-    for label, page_name in us_menu.items():
-        btn_type = "primary" if st.session_state.selected_page == page_name else "secondary"
-        if st.button(label, key=f"us_{label}", use_container_width=True, type=btn_type):
-            st.session_state.selected_page = page_name
-            st.rerun()
-
-
-# --- 메인 컨텐츠 영역 ---
-menu = st.session_state.selected_page
-
-# 1. Home 페이지
-if menu == "🏠 Home":
+def page_home():
     col_title, col_info = st.columns([3, 2])
     with col_title:
         st.title("EMS OVERVIEW")
     with col_info:
-        # [수정 4] 시간 수정: UTC + 9시간 = 한국 시간(KST)
+        # 시간: KST 적용
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
-        
-        # [수정 3] 버전 표시: VER 변수 사용
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
             <div>최종 업데이트: {current_time_str}</div>
@@ -221,14 +79,11 @@ if menu == "🏠 Home":
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
-        st.session_state.selected_page = "📄 일일 리포트"
-        st.rerun()
+        st.switch_page("일일 리포트") # Native Navigation용 페이지 이동 함수
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
-        st.session_state.selected_page = "📊 섹터 모니터링"
-        st.rerun()
+        st.switch_page("섹터 모니터링")
     if c3.button("🔍 종목 검색", use_container_width=True):
-        st.session_state.selected_page = "🔍 종목 스크리닝"
-        st.rerun()
+        st.switch_page("종목 스크리닝")
         
     st.subheader("📊 최근 활동")
     activity_data = pd.DataFrame({
@@ -238,15 +93,12 @@ if menu == "🏠 Home":
     })
     st.dataframe(activity_data, use_container_width=True, hide_index=True)
 
-# 2. 한국장 - 일일 리포트
-elif menu == "📄 일일 리포트":
-    # [수정 4] 리포트 생성 시간도 KST로 통일
+def page_kr_report():
     kst_time = datetime.utcnow() + timedelta(hours=9)
     st.markdown("## 📋 한국 섹터 및 종목 분석 리포트")
     st.markdown(f"<div style='color:#666; font-size:0.8rem; margin-bottom:1rem;'>마지막 리포트 생성 시간: {kst_time.strftime('%Y-%m-%d %H:%M:%S')}</div>", unsafe_allow_html=True)
     
     st.markdown("### 🎯 오늘의 스크리닝 요약")
-    
     sample_data = pd.DataFrame({
         "종목명": ["삼성전자", "SK하이닉스", "LG에너지솔루션", "NAVER", "카카오", "현대차"],
         "현재가": [75000, 150000, 450000, 180000, 55000, 220000],
@@ -254,54 +106,90 @@ elif menu == "📄 일일 리포트":
         "국면": ["저점 이후 반등", "저점 매수 영역", "저점 이후 반등", "저점 매수 영역", "고점 이후 하락", "상승 추세"],
         "RS점수": [85, 92, 78, 65, 45, 88]
     })
-
     st.dataframe(
         sample_data,
         column_config={
             "종목명": st.column_config.TextColumn("종목명", width="medium"),
             "현재가": st.column_config.NumberColumn("현재가", format="%d원"),
-            "등락률": st.column_config.NumberColumn(
-                "등락률", format="%.2f%%", help="전일 대비 등락률"
-            ),
+            "등락률": st.column_config.NumberColumn("등락률", format="%.2f%%"),
             "국면": st.column_config.TextColumn("시장 국면", width="medium"),
-            "RS점수": st.column_config.ProgressColumn(
-                "RS 강도", format="%d", min_value=0, max_value=100
-            ),
+            "RS점수": st.column_config.ProgressColumn("RS 강도", format="%d", min_value=0, max_value=100),
         },
         use_container_width=True,
         hide_index=True
     )
     st.info("💡 **Tip**: '저점 이후 반등' 국면은 추세 전환의 신호일 수 있습니다.")
 
-# 3. 나머지 페이지들 (Placeholder)
-elif menu == "💯 EMS스코어":
+def page_kr_score():
     st.title("💯 EMS스코어")
     st.info("EMS스코어 기능 개발 중입니다.")
-elif menu == "📊 섹터 모니터링":
+
+def page_kr_sector():
     st.title("📊 섹터 모니터링")
     st.write("섹터별 데이터를 준비 중입니다.")
-elif menu == "📈 섹터별 수익률":
+
+def page_kr_yield():
     st.title("📈 섹터별 수익률")
     st.write("수익률 차트를 준비 중입니다.")
-elif menu == "🔍 종목 스크리닝":
+
+def page_kr_screening():
     st.title("🔍 종목 스크리닝")
     st.write("검색 기능을 준비 중입니다.")
 
-# 미국장 페이지들
-elif menu == "💯 EMS스코어 (US)":
-    st.title("💯 EMS스코어 (미국장)")
+def page_us_score():
+    st.title("💯 EMS스코어 (US)")
     st.info("미국장 데이터 연동 중입니다.")
-elif menu == "📊 섹터 모니터링 (US)":
-    st.title("📊 섹터 모니터링 (미국장)")
+
+def page_us_sector():
+    st.title("📊 섹터 모니터링 (US)")
     st.write("미국 섹터 데이터 준비 중입니다.")
-elif menu == "📈 섹터별 수익률 (US)":
-    st.title("📈 섹터별 수익률 (미국장)")
+
+def page_us_yield():
+    st.title("📈 섹터별 수익률 (US)")
     st.write("미국 수익률 차트 준비 중입니다.")
-elif menu == "🔍 종목 스크리닝 (US)":
-    st.title("🔍 종목 스크리닝 (미국장)")
+
+def page_us_screening():
+    st.title("🔍 종목 스크리닝 (US)")
     st.write("미국 종목 검색 준비 중입니다.")
 
-# 푸터
-st.markdown("---")
+# -----------------------------------------------------------------------------
+# [핵심] st.navigation 설정 (여기가 진짜 메뉴를 만드는 곳입니다)
+# -----------------------------------------------------------------------------
+
+# 1. 사이드바 상단 로고 (Native 방식은 sidebar.markdown으로 따로 넣어야 함)
+st.sidebar.markdown("""
+<div style='font-size: 1.4rem; font-weight: 800; color: #1E3A8A; margin-bottom: 1rem; padding-left: 0.2rem; letter-spacing: -0.5px;'>
+EMS QUANT AI
+</div>
+""", unsafe_allow_html=True)
+
+# 2. 페이지 정의 (제목과 함수 연결)
+# st.Page(함수명, title="메뉴이름", icon="아이콘")
+pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
+
+pg_kr_1 = st.Page(page_kr_report, title="일일 리포트", icon="📄")
+pg_kr_2 = st.Page(page_kr_score, title="EMS스코어", icon="💯")
+pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
+pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
+pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
+
+pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
+pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
+pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
+pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
+
+# 3. 네비게이션 구조 정의 (드롭다운 섹션 만들기)
+# 딕셔너리 {"섹션명": [페이지들]} 구조가 드롭다운을 만듭니다.
+pg = st.navigation({
+    "메인 메뉴": [pg_home],
+    "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
+    "미국장": [pg_us_1, pg_us_2, pg_us_3, pg_us_4]
+})
+
+# 4. 앱 실행
+pg.run()
+
+# 5. 푸터
+st.sidebar.markdown("---")
 current_year = datetime.now().year
-st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
