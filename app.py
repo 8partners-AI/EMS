@@ -44,35 +44,52 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 사이드바 네비게이션
-st.sidebar.title("EMS QUANT AI")
+st.sidebar.markdown("""
+<div style='font-size: 1.5rem; font-weight: 700; color: #262730; margin-bottom: 1.5rem;'>
+EMS QUANT AI
+</div>
+""", unsafe_allow_html=True)
 
 # 세션 상태 초기화
 if 'selected_page' not in st.session_state:
     st.session_state.selected_page = "🏠 Home"
 
-# 메뉴 선택
-menu_options = {
-    "🏠 Home": "🏠 Home",
-    "📄 일일 리포트": "📄 일일 리포트",
-    "💯 EMS스코어": "💯 EMS스코어",
-    "📊 섹터 모니터링": "📊 섹터 모니터링",
-    "📈 섹터별 수익률": "📈 섹터별 수익률",
-    "🔍 종목 스크리닝": "🔍 종목 스크리닝",
-    "💯 EMS스코어 (US)": "💯 EMS스코어 (US)",
-    "📊 섹터 모니터링 (US)": "📊 섹터 모니터링 (US)",
-    "📈 섹터별 수익률 (US)": "📈 섹터별 수익률 (US)",
-    "🔍 종목 스크리닝 (US)": "🔍 종목 스크리닝 (US)"
-}
-
-selected = st.sidebar.selectbox(
-    "메뉴 선택",
-    list(menu_options.keys()),
-    index=list(menu_options.keys()).index(st.session_state.selected_page) if st.session_state.selected_page in menu_options else 0
-)
-
-if selected != st.session_state.selected_page:
-    st.session_state.selected_page = selected
+# 메인 메뉴
+st.sidebar.markdown("### 메인 메뉴")
+if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", type="secondary"):
+    st.session_state.selected_page = "🏠 Home"
     st.rerun()
+
+# 한국장 섹션
+st.sidebar.markdown("### 한국장")
+kr_menu_items = [
+    ("📄 일일 리포트", "📄 일일 리포트"),
+    ("💯 EMS스코어", "💯 EMS스코어"),
+    ("📊 섹터 모니터링", "📊 섹터 모니터링"),
+    ("📈 섹터별 수익률", "📈 섹터별 수익률"),
+    ("🔍 종목 스크리닝", "🔍 종목 스크리닝")
+]
+
+for label, page in kr_menu_items:
+    if st.sidebar.button(label, use_container_width=True, key=f"kr_{page}",
+                type="primary" if st.session_state.selected_page == page else "secondary"):
+        st.session_state.selected_page = page
+        st.rerun()
+
+# 미국장 섹션
+st.sidebar.markdown("### 미국장")
+us_menu_items = [
+    ("💯 EMS스코어", "💯 EMS스코어 (US)"),
+    ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
+    ("📈 섹터별 수익률", "📈 섹터별 수익률 (US)"),
+    ("🔍 종목 스크리닝", "🔍 종목 스크리닝 (US)")
+]
+
+for label, page in us_menu_items:
+    if st.sidebar.button(label, use_container_width=True, key=f"us_{page}",
+                type="primary" if st.session_state.selected_page == page else "secondary"):
+        st.session_state.selected_page = page
+        st.rerun()
 
 menu = st.session_state.selected_page
 
