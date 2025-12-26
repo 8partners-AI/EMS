@@ -1,9 +1,12 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import sys
+
+# [수정 3] 버전 관리 변수 (업데이트 때마다 1씩 증가)
+VER = 1 
 
 # 1. 페이지 설정 (최상단 필수)
 st.set_page_config(
@@ -28,7 +31,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-# 3. [핵심] CSS 스타일링: Ongkoo-ai 스타일 완벽 재현
+# 3. [핵심] CSS 스타일링: 이미지 2번(Ongkoo) 스타일 완벽 재현
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -40,21 +43,21 @@ st.markdown("""
 
     /* ----------------------------------------------------------------------
        [사이드바 디자인 혁신] 
-       1. 드롭다운(Expander)의 박스 테두리 제거
-       2. 버튼의 박스 형태 제거 및 왼쪽 정렬 (텍스트 메뉴화)
+       1. 모든 버튼: 왼쪽 정렬 (이미지 2번과 동일하게)
+       2. 홈 버튼: 색상 제거 (Basic)
        ---------------------------------------------------------------------- */
     
-    /* 사이드바 배경색: 아주 연한 톤 */
+    /* 사이드바 배경색: 깔끔한 화이트/연회색 톤 */
     [data-testid="stSidebar"] {
-        background-color: #F8F9FA;
+        background-color: #FAFAFA;
     }
 
-    /* [드롭다운(Expander) 스타일] - 박스 테두리 제거가 핵심 */
+    /* [드롭다운(Expander) 스타일] - 박스 테두리 제거 */
     [data-testid="stSidebar"] [data-testid="stExpander"] {
         border: none !important;
         box-shadow: none !important;
         background-color: transparent !important;
-        margin-bottom: 0rem !important; /* 간격 축소 */
+        margin-bottom: 0rem !important;
     }
     
     [data-testid="stSidebar"] [data-testid="stExpander"] > details {
@@ -67,53 +70,52 @@ st.markdown("""
         font-weight: 600;
         color: #555;
         background-color: transparent !important;
-        padding: 0.5rem 0 0.5rem 0.5rem; /* 여백 조정 */
+        padding: 0.5rem 0 0.5rem 0.5rem; 
     }
-    
-    /* 드롭다운 헤더 마우스 오버 시 */
     [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
         color: #000;
     }
 
-    /* [버튼 스타일] - 텍스트 링크처럼 만들기 */
+    /* [버튼 스타일] - 왼쪽 정렬(Left Align) & 텍스트화 */
     [data-testid="stSidebar"] .stButton > button {
         width: 100%;
         border: none !important;
         background-color: transparent !important;
         color: #4B5563 !important; /* 짙은 회색 */
-        text-align: left !important; /* [중요] 왼쪽 정렬 */
+        
+        /* [수정 1] 이미지 2번처럼 보이기 위한 '왼쪽 정렬' 핵심 코드 */
+        text-align: left !important; 
         display: flex !important;
         justify-content: flex-start !important;
-        padding: 0.4rem 0.5rem 0.4rem 1.5rem !important; /* 들여쓰기로 계층 구조 표현 */
+        
+        padding: 0.4rem 0.5rem 0.4rem 0.5rem !important; /* 여백 조정 */
         font-size: 0.9rem !important;
         font-weight: 400 !important;
         box-shadow: none !important;
-        margin-top: -0.5rem !important; /* 버튼 간격 좁히기 */
+        margin-top: -0.2rem !important;
     }
 
     /* 버튼 마우스 오버 (Hover) */
     [data-testid="stSidebar"] .stButton > button:hover {
-        background-color: rgba(0,0,0,0.03) !important; /* 아주 연한 회색 */
+        background-color: rgba(0,0,0,0.05) !important;
         color: #000 !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
     }
 
-    /* [선택된 메뉴 스타일] - type="primary" 인 경우 */
+    /* [선택된 메뉴 스타일] - 은은한 하이라이트 (Ongkoo 스타일) */
+    /* 기존의 진한 파란색 박스를 없애고, 연한 배경 + 텍스트 강조로 변경 */
     [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-        background-color: #EFF6FF !important; /* 연한 하늘색 배경 */
-        color: #1E3A8A !important; /* 진한 파란색 글씨 */
+        background-color: #EFF6FF !important; /* 아주 연한 하늘색 */
+        color: #1E3A8A !important; /* 진한 남색 글씨 */
         font-weight: 700 !important;
-        border-left: 3px solid #1E3A8A !important; /* 왼쪽에 포인트 컬러바 */
-        padding-left: 1.3rem !important; /* 테두리 두께만큼 보정 */
+        border-left: 3px solid #1E3A8A !important; /* 왼쪽에만 살짝 포인트 */
+        padding-left: calc(0.5rem - 3px) !important; /* 테두리 두께만큼 보정 */
     }
     
-    /* Home 버튼 별도 스타일 (들여쓰기 없앰) */
-    [data-key="menu_home"] > button {
-        padding-left: 0.5rem !important;
-        margin-top: 0 !important;
-    }
+    /* [수정 2] Home 버튼 특정 스타일링 - 강제 색상 제거 */
+    /* Home 버튼이 선택되어도 너무 튀지 않게 위 스타일을 따릅니다 */
 
-    /* 상단 헤더 숨김 (깔끔하게) */
+    /* 상단 헤더 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
 
@@ -135,15 +137,16 @@ if 'selected_page' not in st.session_state:
 
 # 1. 메인 메뉴 (Home)
 st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
-if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True,
-                     type="primary" if st.session_state.selected_page == "🏠 Home" else "secondary"):
+
+# [수정 2] Home 버튼: 선택 여부와 관계없이 깔끔하게 표시 (CSS로 제어)
+home_type = "primary" if st.session_state.selected_page == "🏠 Home" else "secondary"
+if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True, type=home_type):
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
 st.sidebar.markdown("<div style='margin-top:1.5rem;'></div>", unsafe_allow_html=True)
 
 # 2. 한국장 (Expander)
-# 박스 테두리를 없앴으므로, 텍스트가 자연스럽게 그룹화된 것처럼 보입니다.
 with st.sidebar.expander("🇰🇷 한국장", expanded=True):
     kr_menu = {
         "📄 일일 리포트": "📄 일일 리포트",
@@ -154,6 +157,7 @@ with st.sidebar.expander("🇰🇷 한국장", expanded=True):
     }
     
     for label, page_name in kr_menu.items():
+        # [수정 1] 정렬은 CSS에서 'justify-content: flex-start'로 해결됨
         btn_type = "primary" if st.session_state.selected_page == page_name else "secondary"
         if st.button(label, key=f"kr_{label}", use_container_width=True, type=btn_type):
             st.session_state.selected_page = page_name
@@ -186,11 +190,15 @@ if menu == "🏠 Home":
     with col_title:
         st.title("EMS OVERVIEW")
     with col_info:
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # [수정 4] 시간 수정: UTC + 9시간 = 한국 시간(KST)
+        kst_time = datetime.utcnow() + timedelta(hours=9)
+        current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # [수정 3] 버전 표시: VER 변수 사용
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
-            <div>최종 업데이트: {current_time}</div>
-            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: test1111</div>
+            <div>최종 업데이트: {current_time_str}</div>
+            <div style='margin-top: 0.25rem; font-family: monospace; color: #999;'>ver: {VER}</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -203,7 +211,6 @@ if menu == "🏠 Home":
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
-    # 빠른 접근 버튼은 여전히 박스 형태가 직관적이므로 유지 (원하시면 이것도 변경 가능)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.session_state.selected_page = "📄 일일 리포트"
         st.rerun()
@@ -224,8 +231,10 @@ if menu == "🏠 Home":
 
 # 2. 한국장 - 일일 리포트
 elif menu == "📄 일일 리포트":
+    # [수정 4] 리포트 생성 시간도 KST로 통일
+    kst_time = datetime.utcnow() + timedelta(hours=9)
     st.markdown("## 📋 한국 섹터 및 종목 분석 리포트")
-    st.markdown(f"<div style='color:#666; font-size:0.8rem; margin-bottom:1rem;'>마지막 리포트 생성 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color:#666; font-size:0.8rem; margin-bottom:1rem;'>마지막 리포트 생성 시간: {kst_time.strftime('%Y-%m-%d %H:%M:%S')}</div>", unsafe_allow_html=True)
     
     st.markdown("### 🎯 오늘의 스크리닝 요약")
     
