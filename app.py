@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.0.1
-VER = "v0.0.1"
+# [버전 관리] v0.1.1
+VER = "v0.1.1"
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -29,7 +29,7 @@ st.markdown(f"""
     footer {{visibility: hidden;}}
     
     /* ----------------------------------------------------------------------
-       [1] 메인 타이틀 (EMS QUANT AI) - 중앙 정렬
+       [1] 메인 타이틀 (EMS QUANT AI) - 요청하신 RGB(21, 96, 130) 적용
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
         padding-top: 1rem; 
@@ -38,11 +38,11 @@ st.markdown(f"""
     [data-testid="stSidebarNav"]::before {{
         content: "EMS QUANT AI";
         display: block;
-        text-align: center; /* 가운데 정렬 */
+        text-align: center; 
         
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
+        color: #156082; /* RGB(21, 96, 130) -> Hex #156082 */
         letter-spacing: -0.5px;
         
         margin-top: 20px;
@@ -50,16 +50,16 @@ st.markdown(f"""
     }}
 
     /* ----------------------------------------------------------------------
-       [2] 버전 뱃지 ({VER}) - 중앙 정렬 & 알약 스타일
+       [2] 버전 뱃지 ({VER}) - 요청하신 RGB(70, 177, 225) 적용
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul::before {{
         content: "{VER}";
         display: table;      
-        margin: 0 auto;      /* 가운데 정렬 */
+        margin: 0 auto;      
         
         /* 뱃지 디자인 */
-        background-color: #F0F2F6; /* 옅은 회색 배경 */
-        color: #2E7D32;            /* 녹색 글자 */
+        background-color: #F0F2F6; /* 배경은 연한 회색 유지 */
+        color: #46B1E1;            /* 글자색: RGB(70, 177, 225) -> Hex #46B1E1 */
         
         padding: 4px 10px;         
         border-radius: 12px;       
@@ -82,12 +82,12 @@ st.markdown(f"""
 def page_home():
     col_title, col_info = st.columns([3, 2])
     with col_title:
-        st.title("EMS OVERVIEW")
+        # [수정 완료] EMS OVERVIEW -> OVERVIEW
+        st.title("OVERVIEW")
     with col_info:
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
         
-        # [수정 완료] 버전 정보 삭제 -> '최종 업데이트'만 깔끔하게 표시
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
     <div>최종 업데이트: {current_time_str}</div>
@@ -162,7 +162,7 @@ us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# 2. 딕셔너리 구조 (드롭다운 자동 생성)
+# 2. 딕셔너리 구조
 pages = {
     "Main": [home_page],
     "한국장": [kr_1, kr_2, kr_3, kr_4, kr_5],
