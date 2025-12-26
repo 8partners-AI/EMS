@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 26 (Syntax Error 긴급 수정 + Ver 10 디자인 복구)
-VER = 26
+# [버전 관리] Ver: 27 (이중 선 제거 + 섹션 헤더 노출 + 타이틀 상단 고정)
+VER = 27
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (Ver 10 기준 - 타이틀을 맨 위로 올리는 필수 코드만 포함)
+# 2. CSS 스타일링 (필수 요소만 남기고 다 뺐습니다)
 st.markdown("""
 <script>
 (function() {
@@ -40,10 +40,7 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [타이틀 위치 고정]
-       Streamlit 순정 네비게이션은 무조건 맨 위에 오려하기 때문에,
-       CSS를 이용해 그 머리 위에 'EMS QUANT AI' 타이틀을 강제로 심어줍니다.
-       (이 코드가 없으면 타이틀이 맨 아래로 떨어집니다)
+       [1] 타이틀 위치 고정 (맨 위)
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -61,22 +58,23 @@ st.markdown("""
         margin-right: 20px;
         margin-top: 10px;
         
-        /* 구분선 */
+        /* 구분선 1개만 깔끔하게 */
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     /* ----------------------------------------------------------------------
-       [메뉴 텍스트 스타일] - 깔끔하게 (Ongkoo 스타일)
+       [2] 메뉴 디자인 (박스 투명화)
        ---------------------------------------------------------------------- */
+    /* 메뉴 항목 폰트 */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
         font-weight: 500;
         color: #555;
     }
     
-    /* 선택된 메뉴 배경 투명화 */
+    /* 선택된 메뉴(Active) - 배경 투명, 글자 진하게 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -85,12 +83,15 @@ st.markdown("""
         color: #1E3A8A !important;
         font-weight: 800 !important;
     }
+
+    /* 마우스 오버 */
     [data-testid="stSidebarNav"] a:hover {
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* [중요] 섹션 헤더(한국장, 미국장) 관련 CSS는 건드리지 않습니다. */
-    /* Streamlit 순정 기능으로 표시되도록 놔둡니다. */
+    /* [중요] 섹션 헤더(한국장, 미국장) 숨김 CSS 삭제함.
+       이제 Streamlit 순정 상태로 "한국장", "미국장" 글씨가 보일 것입니다.
+    */
 
 </style>
 """, unsafe_allow_html=True)
@@ -163,7 +164,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정]
+# [st.navigation 설정] - 딕셔너리 구조 (드롭다운 자동 생성)
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -174,14 +175,12 @@ pg_kr_3 = st.Page(page_kr_sector, title="섹터 모니터링", icon="📊")
 pg_kr_4 = st.Page(page_kr_yield, title="섹터별 수익률", icon="📈")
 pg_kr_5 = st.Page(page_kr_screening, title="종목 스크리닝", icon="🔍")
 
-# [오타 수정 완료] 끊겼던 부분을 완벽하게 복구했습니다.
 pg_us_1 = st.Page(page_us_score, title="EMS스코어 (US)", icon="💯")
 pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation 실행]
-# 딕셔너리 구조를 사용하므로 '한국장', '미국장' 섹션이 자동으로 생성됩니다.
+# [핵심] 딕셔너리로 넘겨야 섹션 헤더(한국장, 미국장)가 생깁니다.
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -190,7 +189,16 @@ pg = st.navigation({
 
 pg.run()
 
-# 푸터
-st.sidebar.markdown("---")
-current_year = datetime.now().year
-st.sidebar.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+# -----------------------------------------------------------------------------
+# [하단 푸터] - 이중 선 방지를 위해 st.divider() 삭제
+# -----------------------------------------------------------------------------
+with st.sidebar:
+    # 빈 공간 확보 (필요 시)
+    st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+    
+    current_year = datetime.now().year
+    st.markdown(f"""
+    <div style='text-align: center; color: #888; font-size: 0.8rem; border-top: 1px solid #eee; padding-top: 1rem;'>
+        © {current_year} EMS QUANT AI. All rights reserved.
+    </div>
+    """, unsafe_allow_html=True)
