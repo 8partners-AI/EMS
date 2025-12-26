@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] v0.1.5
-VER = "v0.1.5"
+# [버전 관리] v0.1.9
+VER = "v0.1.9"
 
 # [로고 이미지 설정]
-# 여기에 가지고 계신 이미지 파일 경로(예: "my_logo.png")를 넣으시면 됩니다.
-# 지금은 테스트를 위해 웹상의 'Python 로고'를 넣어두었습니다. (깨짐 방지 확인용)
-LOGO_URL = "file:///C:/Users/WD/Desktop/logo.png"
+# 1. logo.png 파일을 app.py와 같은 폴더에 넣으세요.
+# 2. 아래와 같이 파일 이름만 적으시면 됩니다.
+LOGO_URL = "logo.png" 
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -20,12 +20,15 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# [사이드바 로고 적용] - st.logo 사용 (네비게이션 맨 위에 고정)
+# [사이드바 로고 적용]
 # -----------------------------------------------------------------------------
 if LOGO_URL:
-    # st.logo는 사이드바 맨 위(메뉴 위)에 이미지를 배치하는 전용 함수입니다.
-    # icon_image는 사이드바가 접혔을 때 보일 작은 아이콘입니다.
-    st.logo(LOGO_URL, icon_image=LOGO_URL)
+    try:
+        # st.logo는 이미지 경로(문자열)를 받아서 처리합니다.
+        st.logo(LOGO_URL, icon_image=LOGO_URL)
+    except:
+        # 혹시 파일이 없거나 에러가 날 경우를 대비해 예외처리 (빈 공간 방지)
+        st.sidebar.warning("로고 파일을 찾을 수 없습니다. (app.py와 같은 폴더에 logo.png가 있는지 확인하세요)")
 
 
 # 2. CSS 스타일링
@@ -44,10 +47,9 @@ st.markdown(f"""
     
     /* ----------------------------------------------------------------------
        [1] 메인 타이틀 (EMS QUANT AI) 
-       st.logo가 위에 들어가므로, margin-top을 조절해 간격을 맞춥니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {{
-        padding-top: 0rem; /* 로고와의 간격 최소화 */
+        padding-top: 0rem; 
     }}
     
     [data-testid="stSidebarNav"]::before {{
@@ -57,10 +59,10 @@ st.markdown(f"""
         
         font-size: 1.6rem;
         font-weight: 800;
-        color: #0B1E31; /* Hex #0B1E31 */
+        color: #0B1E31; 
         letter-spacing: -0.5px;
         
-        margin-top: 10px; /* 로고 아래 적당한 간격 */
+        margin-top: 10px; 
         margin-bottom: 5px;
     }}
 
@@ -72,7 +74,6 @@ st.markdown(f"""
         display: table;      
         margin: 0 auto;      
         
-        /* 뱃지 디자인 */
         background-color: rgba(255, 255, 255, 0.7); 
         color: #46B1E1;                             
         
@@ -192,4 +193,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
