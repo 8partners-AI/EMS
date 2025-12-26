@@ -8,11 +8,11 @@ from PIL import Image
 # =============================================================================
 # [설정 영역]
 # =============================================================================
-# [버전 관리] v0.2.8 (시스템 상태 아이콘 개선)
-VER = "v0.2.8"
+# [버전 관리] v0.3.0 (시스템 상태 Metric 제거 -> 커스텀 HTML 적용)
+VER = "v0.3.0"
 
 # [로고 크기 조절]
-LOGO_WIDTH = 200
+LOGO_WIDTH = 150
 # =============================================================================
 
 
@@ -77,7 +77,6 @@ st.markdown(f"""
         color: #0B1E31; 
         letter-spacing: -0.5px;
         
-        /* 로고와 타이틀 사이 간격을 좁힘 */
         margin-top: -30px; 
         margin-bottom: 35px;
     }}
@@ -86,7 +85,7 @@ st.markdown(f"""
        [2] 메뉴 컨테이너 (ul) + [상단 회색 구분선]
        ---------------------------------------------------------------------- */
     div[data-testid="stSidebarNav"] > ul {{
-        border-top: 1px solid #bfbfbf; /* 진한 회색 */
+        border-top: 1px solid #bfbfbf; 
         padding-top: 20px;             
         position: relative;            
     }}
@@ -136,14 +135,22 @@ def page_home():
     
     col1, col2, col3, col4 = st.columns(4)
     
+    # 일반 Metric (1~3번)
     col1.metric("국내 증시 종목 수", "2,847", "12") 
     col2.metric("미국 증시 종목 수", "5,234", "45")
     col3.metric("오늘 거래량", "1.2조원", "5.3%")
     
-    # [수정됨] 아이콘 위치 및 스타일 변경
-    # delta 파라미터를 사용하여 작고 깔끔한 위치로 옮겼습니다.
-    # Heavy Check Mark (✔️) 이모지 사용
-    col4.metric("시스템 상태", "정상", delta="✔️") 
+    # [수정 완료] 4번 컬럼: Metric 대신 HTML로 직접 그리기
+    # 옆에 있는 Metric들과 디자인(폰트 크기, 색상, 위치)을 99% 일치시켰습니다.
+    with col4:
+        st.markdown("""
+            <div style="padding-top: 0px;">
+                <div style="font-size: 14px; color: #6e7781; margin-bottom: 4px;">시스템 상태</div>
+                <div style="font-size: 32px; font-weight: 600; color: #31333F; line-height: 1.2;">
+                    정상 <span style="color: #2E7D32; font-size: 0.8em; vertical-align: middle;">✓</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
@@ -232,4 +239,3 @@ with st.sidebar:
     
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
