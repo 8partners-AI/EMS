@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 14 (화살표 Transform 강제 적용)
-VER = 14
+# [버전 관리] Ver: 15 (순정 복구 - CSS 디자인 제거)
+VER = 15
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,8 +14,20 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링
+# 2. 기본 설정 (HTTPS 리다이렉트 + 폰트)
+# 화살표나 버튼을 건드리는 CSS는 싹 지웠습니다.
 st.markdown("""
+<script>
+(function() {
+    if (window.location.protocol === 'http:') {
+        var httpsUrl = window.location.href.replace('http://', 'https://');
+        if (window.location.hostname === '8partners.co.kr' || 
+            window.location.hostname.includes('8partners.co.kr')) {
+            window.location.replace(httpsUrl);
+        }
+    }
+})();
+</script>
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
     
@@ -23,13 +35,15 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더, 푸터 숨김 */
-    header {visibility: visible !important; background: transparent !important;}
+    /* 상단 헤더/푸터 숨김 (필수) */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
-    
+    header {visibility: hidden;}
+
     /* ----------------------------------------------------------------------
-       [1] 타이틀 디자인
+       [타이틀 위치 잡기] 
+       이것 외에는 아무런 디자인 조작을 하지 않습니다.
+       순정 네비게이션 위에 제목만 띄웁니다.
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -41,120 +55,16 @@ st.markdown("""
         font-size: 1.6rem;
         font-weight: 800;
         color: #1E3A8A; 
-        letter-spacing: -0.5px;
         margin-left: 20px;
-        margin-right: 20px; 
-        margin-top: 10px;
-        padding-bottom: 20px; 
-        border-bottom: 1px solid #e0e0e0; 
-        margin-bottom: 25px; 
-    }
-
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 디자인 (텍스트 링크)
-       ---------------------------------------------------------------------- */
-    [data-testid="stSidebar"] {
-        background-color: #FAFAFA;
-    }
-
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-        padding-left: 5px; 
+        margin-bottom: 20px;
     }
     
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-
-    /* ----------------------------------------------------------------------
-       [3] ★ 드롭다운(Expander) 화살표 강제 교정 (핵심) ★
-       ---------------------------------------------------------------------- */
-    
-    /* 1. Expander 컨테이너 리셋 */
-    [data-testid="stSidebar"] [data-testid="stExpander"] {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-    }
-    [data-testid="stSidebar"] details {
-        border: none !important;
-        margin-bottom: 0 !important;
-    }
-
-    /* 2. 헤더(Summary)를 Flexbox로 만들어서 정렬 준비 */
-    [data-testid="stSidebar"] details > summary {
-        display: flex !important;
-        align-items: center !important; /* 수직 중앙 */
-        padding: 0.6rem 0.5rem !important; /* 여백을 조금 더 줘서 숨통을 트임 */
-        list-style: none !important;
-        outline: none !important;
-    }
-
-    /* 3. [핵심] 화살표 아이콘(SVG) 강제 변형 */
-    [data-testid="stSidebar"] details > summary svg {
-        /* 크기를 강제로 1.2배 키웁니다 (Scale) */
-        transform: scale(1.2) translateY(1px) !important; 
-        /* translateY(1px)는 화살표를 1픽셀 아래로 내려서 텍스트와 눈높이를 맞춥니다 */
-        
-        margin-right: 0.8rem !important; /* 텍스트와 거리 벌림 */
-        color: #666 !important;
-        stroke-width: 2px !important; /* 선 두께 보정 */
-        
-        /* 기존 마진/패딩 제거하여 간섭 방지 */
-        margin-top: 0 !important;
-        margin-bottom: 0 !important;
-        vertical-align: middle !important;
-    }
-
-    /* 4. 텍스트 스타일 */
-    [data-testid="stSidebar"] details > summary p {
-        margin: 0 !important;
-        padding: 0 !important;
-        font-size: 0.95rem !important;
-        font-weight: 700 !important;
-        color: #4B5563 !important;
-        line-height: 1.0 !important; 
-        
-        /* 텍스트도 수직 중앙 정렬 보조 */
-        display: inline-flex !important;
-        align-items: center !important;
-    }
-
-    /* 호버 효과 */
-    [data-testid="stSidebar"] details > summary:hover {
-         background-color: rgba(0,0,0,0.03) !important;
-         border-radius: 6px !important;
-         color: #000 !important;
-    }
-    [data-testid="stSidebar"] details > summary:hover svg {
-        color: #1E3A8A !important; /* 호버시 화살표 파란색 */
-    }
-    [data-testid="stSidebar"] details > summary:hover p {
-        color: #1E3A8A !important; /* 호버시 글자 파란색 */
-    }
-
 </style>
 """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용]
+# [페이지 내용 정의]
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -220,8 +130,10 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정]
+# [st.navigation - 순정 기능]
 # -----------------------------------------------------------------------------
+# 여기에는 어떤 CSS나 디자인 조작도 들어가지 않습니다. 
+# Streamlit이 제공하는 그대로 렌더링됩니다.
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
 
