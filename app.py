@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 15 (순정 복구 - CSS 디자인 제거)
-VER = 15
+# [버전 관리] Ver: 18 (Ver 10 구조 복구 + 화살표 정렬 CSS 이식)
+VER = 18
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,8 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. 기본 설정 (HTTPS 리다이렉트 + 폰트)
-# 화살표나 버튼을 건드리는 CSS는 싹 지웠습니다.
+# 2. CSS 스타일링 (Ver 10 베이스 + 화살표 수정)
 st.markdown("""
 <script>
 (function() {
@@ -35,15 +34,13 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더/푸터 숨김 (필수) */
+    /* 상단 헤더, 푸터 숨김 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-
+    
     /* ----------------------------------------------------------------------
-       [타이틀 위치 잡기] 
-       이것 외에는 아무런 디자인 조작을 하지 않습니다.
-       순정 네비게이션 위에 제목만 띄웁니다.
+       [1] 타이틀 및 구분선 (Ver 10 코드 그대로 유지)
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -54,17 +51,100 @@ st.markdown("""
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; 
+        color: #1E3A8A; /* 진한 남색 */
+        letter-spacing: -0.5px;
+        
+        /* 위치 조정 */
         margin-left: 20px;
-        margin-bottom: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        
+        /* 구분선 및 간격 디자인 */
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 25px;
+    }
+
+    /* ----------------------------------------------------------------------
+       [2] 메뉴 텍스트 및 기본 디자인 (Ver 10 코드 유지)
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebarNav"] span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #555;
+        padding-left: 5px;
     }
     
+    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
+    [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background-color: transparent !important;
+        color: #1E3A8A !important;
+    }
+    
+    [data-testid="stSidebarNav"] a[aria-current="page"] span {
+        color: #1E3A8A !important;
+        font-weight: 800 !important;
+    }
+
+    [data-testid="stSidebarNav"] a:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+    }
+
+    /* 기본 섹션 구분선 숨김 */
+    [data-testid="stSidebarNavSeparator"] {
+        display: none;
+    }
+
+    /* ----------------------------------------------------------------------
+       [3] ★ 화살표 디자인 보정 (여기에 Ver 14의 CSS 기술 적용) ★
+       Native Navigation의 그룹 헤더(details > summary)를 타격합니다.
+       ---------------------------------------------------------------------- */
+       
+    /* 그룹 헤더(Summary)를 Flexbox로 정렬 */
+    [data-testid="stSidebarNav"] details > summary {
+        display: flex !important;
+        align-items: center !important; /* 수직 중앙 정렬 */
+        padding-left: 10px !important;  /* 여백 조정 */
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        cursor: pointer;
+    }
+
+    /* 화살표 아이콘(SVG) 강제 성형 */
+    [data-testid="stSidebarNav"] details > summary svg {
+        transform: scale(1.2) translateY(1px) !important; /* 크기 키우고 위치 보정 */
+        margin-right: 0.5rem !important;
+        color: #666 !important;
+        stroke-width: 2px !important;
+        vertical-align: middle !important;
+    }
+
+    /* 그룹 헤더 텍스트 스타일 */
+    [data-testid="stSidebarNav"] details > summary span {
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #999 !important;
+        text-transform: uppercase !important;
+        padding-left: 0 !important; /* 기존 패딩 초기화 */
+        margin: 0 !important;
+    }
+
+    /* 호버 효과 */
+    [data-testid="stSidebarNav"] details > summary:hover {
+        background-color: rgba(0,0,0,0.02);
+        border-radius: 5px;
+    }
+    [data-testid="stSidebarNav"] details > summary:hover span,
+    [data-testid="stSidebarNav"] details > summary:hover svg {
+        color: #333 !important; /* 진한 색으로 변경 */
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용 정의]
+# [페이지 내용 정의] (Ver 10과 동일)
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -89,6 +169,7 @@ def page_home():
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
+    # switch_page 사용 (Navigation 구조에 맞춤)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
@@ -130,10 +211,8 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation - 순정 기능]
+# [st.navigation 설정] - Ver 10의 핵심 구조
 # -----------------------------------------------------------------------------
-# 여기에는 어떤 CSS나 디자인 조작도 들어가지 않습니다. 
-# Streamlit이 제공하는 그대로 렌더링됩니다.
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
 
