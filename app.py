@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 20 (Ver 10 베이스 + 화살표 디자인 정밀 보정)
-VER = 20
+# [버전 관리] Ver: 21 (섹션 헤더 '한국장/미국장' 강제 노출 복구)
+VER = 21
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 (Ver 10 기반 + 화살표 보정 추가)
+# 2. CSS 스타일링
 st.markdown("""
 <script>
 (function() {
@@ -40,7 +40,7 @@ st.markdown("""
     header {visibility: hidden;}
     
     /* ----------------------------------------------------------------------
-       [1] 타이틀 및 구분선 (Ver 10 코드 유지 - 건드리지 않음)
+       [1] 타이틀 및 구분선
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] {
         padding-top: 1rem; 
@@ -51,22 +51,18 @@ st.markdown("""
         display: block;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
+        color: #1E3A8A; 
         letter-spacing: -0.5px;
-        
-        /* 위치 조정 */
         margin-left: 20px;
         margin-right: 20px;
         margin-top: 10px;
-        
-        /* 구분선 및 간격 디자인 */
         padding-bottom: 20px;
         border-bottom: 1px solid #e0e0e0;
         margin-bottom: 25px;
     }
 
     /* ----------------------------------------------------------------------
-       [2] 메뉴 텍스트 및 기본 디자인 (Ver 10 코드 유지)
+       [2] 메뉴 텍스트 및 기본 디자인
        ---------------------------------------------------------------------- */
     [data-testid="stSidebarNav"] span {
         font-size: 0.95rem;
@@ -75,7 +71,6 @@ st.markdown("""
         padding-left: 5px;
     }
     
-    /* 선택된 메뉴(Active) 스타일링 - 배경 투명, 글자 강조 */
     [data-testid="stSidebarNav"] a[aria-current="page"] {
         background-color: transparent !important;
         color: #1E3A8A !important;
@@ -90,53 +85,53 @@ st.markdown("""
         background-color: rgba(0,0,0,0.03) !important;
     }
 
-    /* 기본 섹션 구분선 숨김 */
-    [data-testid="stSidebarNavSeparator"] {
-        display: none;
-    }
-
     /* ----------------------------------------------------------------------
-       [3] ★ 화살표 디자인 보정 (이 부분만 추가됨) ★
-       Native Navigation의 그룹 헤더(details > summary)를 타격합니다.
+       [3] ★ 섹션 헤더(한국장, 미국장) 강제 노출 및 화살표 디자인 ★
+       여기가 핵심입니다. details > summary를 확실하게 꾸밉니다.
        ---------------------------------------------------------------------- */
        
-    /* 그룹 헤더(Summary) 정렬 */
+    /* 1. 그룹 헤더 컨테이너 */
+    [data-testid="stSidebarNav"] details {
+        margin-bottom: 10px !important; /* 섹션 간 간격 */
+    }
+
+    /* 2. 요약(헤더) 부분 디자인 */
     [data-testid="stSidebarNav"] details > summary {
         display: flex !important;
-        align-items: center !important; /* 수직 중앙 정렬 */
+        align-items: center !important;
         padding-left: 10px !important;  
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
         cursor: pointer;
+        list-style: none !important; /* 기본 삼각형 제거 */
     }
 
-    /* 화살표 아이콘(SVG) 강제 성형 - 크기 키우고 위치 내림 */
+    /* 3. 화살표 아이콘(SVG) - Ver 20의 성공 코드 */
     [data-testid="stSidebarNav"] details > summary svg {
-        transform: scale(1.2) translateY(1px) !important; /* 1.2배 확대, 1px 내림 */
+        transform: scale(1.2) translateY(1px) !important;
         margin-right: 0.5rem !important;
-        color: #666 !important;
-        stroke-width: 2px !important; /* 선 굵게 */
+        color: #555 !important; /* 색상 진하게 */
+        stroke-width: 2px !important;
         vertical-align: middle !important;
+        display: inline-block !important; /* 숨김 방지 */
+        visibility: visible !important;   /* 숨김 방지 */
     }
 
-    /* 그룹 헤더 텍스트 스타일 */
+    /* 4. [핵심 수정] 텍스트(한국장, 미국장) - 숨김 방지 및 스타일링 */
     [data-testid="stSidebarNav"] details > summary span {
         font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        color: #999 !important;
+        font-weight: 700 !important; /* 굵게 */
+        color: #444 !important;      /* 진한 회색 */
         text-transform: uppercase !important;
-        padding-left: 0 !important; 
-        margin: 0 !important;
+        display: inline-block !important; /* 숨김 방지 */
+        visibility: visible !important;   /* 숨김 방지 */
+        opacity: 1 !important;            /* 투명도 제거 */
     }
 
-    /* 호버 효과 */
-    [data-testid="stSidebarNav"] details > summary:hover {
-        background-color: rgba(0,0,0,0.02);
-        border-radius: 5px;
-    }
-    [data-testid="stSidebarNav"] details > summary:hover span,
-    [data-testid="stSidebarNav"] details > summary:hover svg {
-        color: #333 !important; /* 진한 색으로 변경 */
+    /* 5. 구분선(Separator) 숨김 처리 */
+    /* 혹시 이것 때문에 텍스트가 같이 사라졌을 수 있으니, 선택자를 아주 구체적으로 잡습니다 */
+    div[data-testid="stSidebarNavSeparator"] {
+        display: none !important;
     }
 
 </style>
@@ -144,7 +139,7 @@ st.markdown("""
 
 
 # -----------------------------------------------------------------------------
-# [페이지 내용 정의] (Ver 10과 동일)
+# [페이지 내용 정의]
 # -----------------------------------------------------------------------------
 
 def page_home():
@@ -169,7 +164,6 @@ def page_home():
     
     st.subheader("🚀 빠른 접근")
     c1, c2, c3 = st.columns(3)
-    # switch_page 사용 (Navigation 구조에 맞춤)
     if c1.button("📄 일일 리포트 바로가기", use_container_width=True):
         st.switch_page(pg_kr_1)
     if c2.button("📊 섹터 모니터링 확인", use_container_width=True):
@@ -211,7 +205,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - Ver 10의 핵심 구조 유지
+# [st.navigation 설정]
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
