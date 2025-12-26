@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 29 (타이틀 상단 고정 + 네비게이션 기능 순정 유지 + 이중선 제거)
-VER = 29
+# [버전 관리] Ver: 24 (CSS 완전 제거 - 100% 순정 모드)
+VER = 24
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,7 +14,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링
+# 2. CSS 스타일링 (네비게이션 관련 CSS 전부 삭제)
+# 오직 폰트와 상단 헤더 숨김(기본)만 남겼습니다.
 st.markdown("""
 <script>
 (function() {
@@ -34,66 +35,16 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더, 푸터 숨김 */
+    /* 상단 헤더, 푸터 숨김 (이건 필수) */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* ----------------------------------------------------------------------
-       [1] 타이틀 위치 상단 고정 (필수 CSS)
-       이 코드가 없으면 타이틀이 메뉴 맨 아래(바닥)로 떨어집니다.
-       네비게이션 기능은 건드리지 않고, 머리 위에 공간만 만들어서 제목을 넣습니다.
-       ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] {
-        padding-top: 1rem; 
-    }
-    
-    [data-testid="stSidebarNav"]::before {
-        content: "EMS QUANT AI";
-        display: block;
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #1E3A8A; /* 진한 남색 */
-        letter-spacing: -0.5px;
-        
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 10px;
-        
-        /* 구분선 */
-        padding-bottom: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 20px;
-    }
-
-    /* ----------------------------------------------------------------------
-       [2] 메뉴 버튼 투명화 (Ongkoo 스타일)
-       기능(작동)에는 영향을 주지 않고, 회색 박스만 투명하게 만듭니다.
-       ---------------------------------------------------------------------- */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-    }
-    
-    /* 선택된 메뉴만 글자색 강조 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-    /* 마우스 오버 시 살짝 배경 */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
-    /* [약속] 네비게이션의 '한국장/미국장' 헤더나 화살표를 건드리는 CSS는
-       단 한 줄도 넣지 않았습니다. 이제 Streamlit 순정 상태로 나옵니다.
+    /* [중요] 
+       네비게이션, 사이드바, 화살표, 폰트 색상 등 
+       디자인을 건드리는 그 어떤 CSS도 넣지 않았습니다.
     */
-
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -165,7 +116,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - 딕셔너리 구조 (드롭다운 자동 생성)
+# [st.navigation 설정]
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -181,7 +132,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation] 딕셔너리로 묶어서 보냄 -> 자동으로 한국장/미국장 섹션 생성
+# [순정 그 자체]
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -190,12 +141,20 @@ pg = st.navigation({
 
 pg.run()
 
+
 # -----------------------------------------------------------------------------
-# [하단 푸터] - 이중 선 생기는 st.divider() 제거
+# [사이드바 내용]
+# 순정 모드에서는 네비게이션이 무조건 맨 위로 갑니다. (Streamlit 강제 사항)
+# 그래서 타이틀과 푸터는 그 아래에 붙습니다.
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    # 아래쪽 여백 확보
-    st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+    st.divider() # 구분선
+    # 타이틀 (네비게이션 아래에 위치하게 됩니다)
+    st.markdown("""
+    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A;'>
+        EMS QUANT AI
+    </div>
+    """, unsafe_allow_html=True)
     
     current_year = datetime.now().year
-    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color: #888; font-size: 0.8rem; margin-top: 1rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
