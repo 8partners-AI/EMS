@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 28 (CSS 완전 초기화 - 네비게이션 간섭 0%)
-VER = 28
+# [버전 관리] Ver: 24 (CSS 완전 제거 - 100% 순정 모드)
+VER = 24
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -14,9 +14,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS 스타일링 
-# [중요] 네비게이션 위치, 화살표, 섹션 헤더를 건드리는 코드는 '단 한 줄도' 없습니다.
-# 오직 '폰트'와 '버튼 배경 투명화'만 남겼습니다.
+# 2. CSS 스타일링 (네비게이션 관련 CSS 전부 삭제)
+# 오직 폰트와 상단 헤더 숨김(기본)만 남겼습니다.
 st.markdown("""
 <script>
 (function() {
@@ -36,36 +35,16 @@ st.markdown("""
         font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     }
 
-    /* 상단 헤더, 푸터 숨김 */
+    /* 상단 헤더, 푸터 숨김 (이건 필수) */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* ----------------------------------------------------------------------
-       [메뉴 버튼 디자인] - 이것만 남김 (박스 없애기)
-       ---------------------------------------------------------------------- */
-    /* 메뉴 텍스트 폰트 */
-    [data-testid="stSidebarNav"] span {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #555;
-    }
+    /* [중요] 
+       네비게이션, 사이드바, 화살표, 폰트 색상 등 
+       디자인을 건드리는 그 어떤 CSS도 넣지 않았습니다.
+    */
     
-    /* 선택된 메뉴(Active) - 배경 투명, 글자 진하게 */
-    [data-testid="stSidebarNav"] a[aria-current="page"] {
-        background-color: transparent !important;
-        color: #1E3A8A !important;
-    }
-    [data-testid="stSidebarNav"] a[aria-current="page"] span {
-        color: #1E3A8A !important;
-        font-weight: 800 !important;
-    }
-
-    /* 마우스 오버 시 */
-    [data-testid="stSidebarNav"] a:hover {
-        background-color: rgba(0,0,0,0.03) !important;
-    }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -137,7 +116,7 @@ def page_us_screening(): st.title("🔍 종목 스크리닝 (US)"); st.write("�
 
 
 # -----------------------------------------------------------------------------
-# [st.navigation 설정] - 순정 구조 (딕셔너리)
+# [st.navigation 설정]
 # -----------------------------------------------------------------------------
 
 pg_home = st.Page(page_home, title="Home", icon="🏠", default=True)
@@ -153,8 +132,7 @@ pg_us_2 = st.Page(page_us_sector, title="섹터 모니터링 (US)", icon="📊")
 pg_us_3 = st.Page(page_us_yield, title="섹터별 수익률 (US)", icon="📈")
 pg_us_4 = st.Page(page_us_screening, title="종목 스크리닝 (US)", icon="🔍")
 
-# [Native Navigation 실행]
-# 딕셔너리 구조를 사용하므로 '한국장', '미국장' 섹션이 자동으로 생성됩니다.
+# [순정 그 자체]
 pg = st.navigation({
     "Main": [pg_home],
     "한국장": [pg_kr_1, pg_kr_2, pg_kr_3, pg_kr_4, pg_kr_5],
@@ -163,18 +141,20 @@ pg = st.navigation({
 
 pg.run()
 
+
 # -----------------------------------------------------------------------------
-# [사이드바 하단 타이틀]
-# 순정 st.navigation은 메뉴를 최상단에 고정합니다.
-# 따라서 타이틀은 그 아래에 수동으로 넣어야 합니다.
+# [사이드바 내용]
+# 순정 모드에서는 네비게이션이 무조건 맨 위로 갑니다. (Streamlit 강제 사항)
+# 그래서 타이틀과 푸터는 그 아래에 붙습니다.
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("---")
+    st.divider() # 구분선
+    # 타이틀 (네비게이션 아래에 위치하게 됩니다)
     st.markdown("""
-    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A; margin-bottom: 2rem;'>
+    <div style='font-size: 1.5rem; font-weight: 800; color: #1E3A8A;'>
         EMS QUANT AI
     </div>
     """, unsafe_allow_html=True)
     
     current_year = datetime.now().year
-    st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='color: #888; font-size: 0.8rem; margin-top: 1rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
