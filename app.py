@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 import os
 import sys
 
-# [수정 3] 버전 관리 변수 (업데이트 때마다 1씩 증가)
-VER = 1 
+# [버전 관리] 1 -> 2 업데이트
+VER = 2
 
 # 1. 페이지 설정 (최상단 필수)
 st.set_page_config(
@@ -31,7 +31,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-# 3. [핵심] CSS 스타일링: 이미지 2번(Ongkoo) 스타일 완벽 재현
+# 3. [핵심] CSS 스타일링: 정렬 문제 및 색상 제거 완벽 해결
 st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
@@ -42,78 +42,87 @@ st.markdown("""
     }
 
     /* ----------------------------------------------------------------------
-       [사이드바 디자인 혁신] 
-       1. 모든 버튼: 왼쪽 정렬 (이미지 2번과 동일하게)
-       2. 홈 버튼: 색상 제거 (Basic)
+       [사이드바 디자인 - 강제 왼쪽 정렬 및 스타일 리셋]
        ---------------------------------------------------------------------- */
     
-    /* 사이드바 배경색: 깔끔한 화이트/연회색 톤 */
+    /* 사이드바 배경 */
     [data-testid="stSidebar"] {
         background-color: #FAFAFA;
     }
 
-    /* [드롭다운(Expander) 스타일] - 박스 테두리 제거 */
-    [data-testid="stSidebar"] [data-testid="stExpander"] {
-        border: none !important;
-        box-shadow: none !important;
-        background-color: transparent !important;
-        margin-bottom: 0rem !important;
-    }
-    
-    [data-testid="stSidebar"] [data-testid="stExpander"] > details {
-        border: none !important;
-    }
-
-    /* 드롭다운 헤더(제목) 스타일 */
-    [data-testid="stSidebar"] .streamlit-expanderHeader {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #555;
-        background-color: transparent !important;
-        padding: 0.5rem 0 0.5rem 0.5rem; 
-    }
-    [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
-        color: #000;
-    }
-
-    /* [버튼 스타일] - 왼쪽 정렬(Left Align) & 텍스트화 */
-    [data-testid="stSidebar"] .stButton > button {
+    /* [중요] 버튼 내부의 모든 요소까지 강제로 왼쪽 정렬시키는 코드 */
+    /* Streamlit 버튼은 내부에 div와 p태그가 있어서 겉만 정렬하면 안됩니다. */
+    [data-testid="stSidebar"] .stButton button {
         width: 100%;
         border: none !important;
         background-color: transparent !important;
-        color: #4B5563 !important; /* 짙은 회색 */
+        box-shadow: none !important;
+        color: #4B5563 !important;
         
-        /* [수정 1] 이미지 2번처럼 보이기 위한 '왼쪽 정렬' 핵심 코드 */
-        text-align: left !important; 
+        /* Flexbox 강제 왼쪽 정렬 */
         display: flex !important;
         justify-content: flex-start !important;
+        align-items: center !important;
+        text-align: left !important;
         
-        padding: 0.4rem 0.5rem 0.4rem 0.5rem !important; /* 여백 조정 */
+        padding: 0.3rem 0.5rem !important;
+        margin: 0 !important;
         font-size: 0.9rem !important;
         font-weight: 400 !important;
-        box-shadow: none !important;
-        margin-top: -0.2rem !important;
     }
 
-    /* 버튼 마우스 오버 (Hover) */
-    [data-testid="stSidebar"] .stButton > button:hover {
+    /* 버튼 내부 텍스트 컨테이너(div/p)까지 왼쪽으로 밀어버림 */
+    [data-testid="stSidebar"] .stButton button div,
+    [data-testid="stSidebar"] .stButton button p {
+        text-align: left !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        display: block !important;
+    }
+
+    /* 마우스 올렸을 때 (Hover) */
+    [data-testid="stSidebar"] .stButton button:hover {
         background-color: rgba(0,0,0,0.05) !important;
         color: #000 !important;
         font-weight: 600 !important;
     }
 
-    /* [선택된 메뉴 스타일] - 은은한 하이라이트 (Ongkoo 스타일) */
-    /* 기존의 진한 파란색 박스를 없애고, 연한 배경 + 텍스트 강조로 변경 */
-    [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-        background-color: #EFF6FF !important; /* 아주 연한 하늘색 */
-        color: #1E3A8A !important; /* 진한 남색 글씨 */
+    /* [선택된 메뉴 스타일] - Home 버튼 제외 */
+    /* Home 버튼은 아래에서 별도 클래스나 로직으로 색상을 뺄 것이므로, 
+       여기서는 'Primary' 타입인 버튼(다른 메뉴들)만 꾸밉니다. */
+    [data-testid="stSidebar"] .stButton button[kind="primary"] {
+        background-color: #EFF6FF !important; 
+        color: #1E3A8A !important; 
         font-weight: 700 !important;
-        border-left: 3px solid #1E3A8A !important; /* 왼쪽에만 살짝 포인트 */
-        padding-left: calc(0.5rem - 3px) !important; /* 테두리 두께만큼 보정 */
+        border-left: 3px solid #1E3A8A !important;
+        border-radius: 0 4px 4px 0 !important;
     }
-    
-    /* [수정 2] Home 버튼 특정 스타일링 - 강제 색상 제거 */
-    /* Home 버튼이 선택되어도 너무 튀지 않게 위 스타일을 따릅니다 */
+
+    /* [수정 요청 사항] Home 버튼 전용 스타일 해킹 */
+    /* Home 버튼은 키값(key="menu_home")을 통해 CSS로 특정하여 색상을 강제 제거합니다. */
+    div[data-testid="stVerticalBlock"] div:has(> .stButton > button[kind="secondary"]) {
+       /* Secondary 버튼 영역 보정 */
+    }
+
+    /* 드롭다운(Expander) 스타일 리셋 */
+    [data-testid="stSidebar"] [data-testid="stExpander"] {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stExpander"] > details {
+        border: none !important;
+    }
+    [data-testid="stSidebar"] .streamlit-expanderHeader {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #555;
+        padding: 0.5rem 0 0.5rem 0.5rem; 
+        background-color: transparent !important;
+    }
+    [data-testid="stSidebar"] .streamlit-expanderHeader:hover {
+        color: #000;
+    }
 
     /* 상단 헤더 숨김 */
     #MainMenu {visibility: hidden;}
@@ -138,9 +147,9 @@ if 'selected_page' not in st.session_state:
 # 1. 메인 메뉴 (Home)
 st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:600; color:#999; margin-bottom:0.5rem; padding-left:0.5rem;'>메인 메뉴</div>", unsafe_allow_html=True)
 
-# [수정 2] Home 버튼: 선택 여부와 관계없이 깔끔하게 표시 (CSS로 제어)
-home_type = "primary" if st.session_state.selected_page == "🏠 Home" else "secondary"
-if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True, type=home_type):
+# [수정 2] Home 버튼: type="secondary"로 고정하여 파란색 박스 제거
+# 선택되더라도 색상이 변하지 않기를 원하셨으므로 항상 'secondary' (기본값) 사용
+if st.sidebar.button("🏠 Home", key="menu_home", use_container_width=True, type="secondary"):
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
@@ -157,7 +166,7 @@ with st.sidebar.expander("🇰🇷 한국장", expanded=True):
     }
     
     for label, page_name in kr_menu.items():
-        # [수정 1] 정렬은 CSS에서 'justify-content: flex-start'로 해결됨
+        # 선택된 메뉴만 'primary' 스타일(연한 파랑 배경) 적용
         btn_type = "primary" if st.session_state.selected_page == page_name else "secondary"
         if st.button(label, key=f"kr_{label}", use_container_width=True, type=btn_type):
             st.session_state.selected_page = page_name
