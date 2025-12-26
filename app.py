@@ -47,7 +47,14 @@ st.markdown("""
         display: block !important;
     }
     
-    /* Expander 스타일 개선 */
+    /* Expander 스타일 개선 - 확실히 보이도록 */
+    [data-testid="stExpander"] {
+        visibility: visible !important;
+        display: block !important;
+        margin-bottom: 0.5rem !important;
+        opacity: 1 !important;
+    }
+    
     .streamlit-expanderHeader {
         font-size: 0.75rem !important;
         font-weight: 600 !important;
@@ -56,7 +63,19 @@ st.markdown("""
         margin-bottom: 0.5rem !important;
         cursor: pointer !important;
         visibility: visible !important;
-        display: block !important;
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        opacity: 1 !important;
+        background-color: transparent !important;
+    }
+    
+    .streamlit-expanderHeader:hover {
+        background-color: rgba(0, 0, 0, 0.02) !important;
+    }
+    
+    .streamlit-expanderHeader:active {
+        background-color: rgba(0, 0, 0, 0.05) !important;
     }
     
     .streamlit-expanderContent {
@@ -64,6 +83,7 @@ st.markdown("""
         margin-top: 0 !important;
         visibility: visible !important;
         display: block !important;
+        opacity: 1 !important;
     }
     
     /* Expander 내부 버튼 스타일 */
@@ -75,10 +95,17 @@ st.markdown("""
         display: block !important;
     }
     
-    /* Expander 전체 보이기 보장 */
-    [data-testid="stExpander"] {
+    /* Expander 아이콘 보이기 */
+    .streamlit-expanderHeader svg,
+    .streamlit-expanderHeader [class*="icon"] {
         visibility: visible !important;
-        display: block !important;
+        display: inline-block !important;
+        opacity: 1 !important;
+    }
+    
+    /* Expander 전체 요소 보이기 */
+    .streamlit-expanderHeader * {
+        visibility: visible !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -104,10 +131,9 @@ if st.sidebar.button("🏠 Home", use_container_width=True, key="menu_home", typ
     st.session_state.selected_page = "🏠 Home"
     st.rerun()
 
-# 한국장 섹션 (드롭다운)
+# 한국장 섹션 (드롭다운 - 접기/펼치기 가능)
 st.sidebar.markdown("### 한국장")
-kr_expander = st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded)
-with kr_expander:
+with st.sidebar.expander("한국장", expanded=st.session_state.kr_expanded):
     kr_menu_items = [
         ("📄 일일 리포트", "📄 일일 리포트"),
         ("💯 EMS스코어", "💯 EMS스코어"),
@@ -117,15 +143,14 @@ with kr_expander:
     ]
     
     for idx, (label, page) in enumerate(kr_menu_items):
-        if st.button(label, use_container_width=True, key=f"kr_btn_{idx}_{page.replace(' ', '_')}",
+        if st.button(label, use_container_width=True, key=f"kr_btn_{idx}",
                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
 
-# 미국장 섹션 (드롭다운)
+# 미국장 섹션 (드롭다운 - 접기/펼치기 가능)
 st.sidebar.markdown("### 미국장")
-us_expander = st.sidebar.expander("미국장", expanded=st.session_state.us_expanded)
-with us_expander:
+with st.sidebar.expander("미국장", expanded=st.session_state.us_expanded):
     us_menu_items = [
         ("💯 EMS스코어", "💯 EMS스코어 (US)"),
         ("📊 섹터 모니터링", "📊 섹터 모니터링 (US)"),
@@ -134,8 +159,7 @@ with us_expander:
     ]
     
     for idx, (label, page) in enumerate(us_menu_items):
-        clean_page = page.replace(' ', '_').replace('(', '').replace(')', '').replace('US', 'US')
-        if st.button(label, use_container_width=True, key=f"us_btn_{idx}_{clean_page}",
+        if st.button(label, use_container_width=True, key=f"us_btn_{idx}",
                     type="primary" if st.session_state.selected_page == page else "secondary"):
             st.session_state.selected_page = page
             st.rerun()
@@ -154,7 +178,7 @@ if menu == "🏠 Home":
         st.markdown(f"""
         <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.875rem;'>
             <div>최종 수정시간: {current_time}</div>
-            <div style='margin-top: 0.25rem;'>test6</div>
+            <div style='margin-top: 0.25rem;'>test!!!</div>
         </div>
         """, unsafe_allow_html=True)
     
