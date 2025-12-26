@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# [버전 관리] Ver: 38 (CSS [3]번 블록 삭제 - 순정 네비게이션 복구 완료)
-VER = 39
+# [버전 관리] Ver: 39 (CSS 완전 초기화 + HTML 노출 수정 + 순정 네비게이션)
+VER = 3ㅇㅇㅇㅇㅇㅇㅇㅇㅇ
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -13,6 +13,55 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# 2. CSS 스타일링
+st.markdown("""
+<style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+    
+    html, body, [class*="css"] {
+        font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    }
+
+    /* 상단 헤더, 푸터 숨김 */
+    header {visibility: visible !important; background: transparent !important;}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* ----------------------------------------------------------------------
+       [1] 타이틀 디자인 (이것만 남김)
+       네비게이션 상단에 'EMS QUANT AI' 제목을 넣습니다.
+       ---------------------------------------------------------------------- */
+    [data-testid="stSidebarNav"] {
+        padding-top: 1rem; 
+    }
+    
+    [data-testid="stSidebarNav"]::before {
+        content: "EMS QUANT AI";
+        display: block;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #1E3A8A; /* 진한 남색 */
+        letter-spacing: -0.5px;
+        
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        margin-bottom: 25px;
+    }
+
+    /* [중요]
+       이전에 있던 '메뉴 텍스트 스타일', '섹션 헤더 스타일', '드롭다운 스타일' 등
+       네비게이션 내부를 건드리는 모든 CSS를 삭제했습니다.
+       이제 Streamlit 순정 기능이 100% 작동하여 GitHub 예제처럼 화살표가 잘 나올 것입니다.
+    */
+
+</style>
+""", unsafe_allow_html=True)
+
 
 # -----------------------------------------------------------------------------
 # [페이지 함수 정의]
@@ -26,7 +75,7 @@ def page_home():
         kst_time = datetime.utcnow() + timedelta(hours=9)
         current_time_str = kst_time.strftime('%Y-%m-%d %H:%M:%S')
         
-        # [수정] HTML 코드 들여쓰기 제거 (코드 노출 방지)
+        # [수정 완료] HTML 코드를 왼쪽 벽에 붙여서 그대로 노출되는 문제를 해결했습니다.
         st.markdown(f"""
 <div style='text-align: right; padding-top: 1.5rem; color: #666; font-size: 0.8rem;'>
 <div>최종 업데이트: {current_time_str}</div>
@@ -118,4 +167,3 @@ with st.sidebar:
     st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
     current_year = datetime.now().year
     st.markdown(f"<div style='text-align: center; color: #888; font-size: 0.8rem;'>© {current_year} EMS QUANT AI. All rights reserved.</div>", unsafe_allow_html=True)
-
